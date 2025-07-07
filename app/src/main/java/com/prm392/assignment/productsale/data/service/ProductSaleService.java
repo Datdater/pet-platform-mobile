@@ -6,6 +6,7 @@ import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.model.cart.CartTotalResponse;
 import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
+import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public interface ProductSaleService {
                                                                 @Query("maxPrice") Double maxPrice,
                                                                 @Query("categoryIds") List<Integer> categoryIds);
     @GET("product/demo")
-    Observable<Response<ProductsSaleResponseModel>> getDemoProducts(@Header("Authorization") String token);
+    Observable<Response<ServiceResponseModel>> getServices(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
     @GET("product/{productId}")

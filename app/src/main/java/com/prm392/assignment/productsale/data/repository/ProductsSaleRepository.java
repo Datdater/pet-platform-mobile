@@ -10,6 +10,7 @@ import com.prm392.assignment.productsale.model.cart.AddProductCartModel;
 import com.prm392.assignment.productsale.model.cart.CartTotalResponse;
 import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
+import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 
 import java.util.List;
 
@@ -46,6 +47,25 @@ public class ProductsSaleRepository {
                         .toFlowable(BackpressureStrategy.LATEST)
         );
     }
+
+    public LiveData<Response<ServiceResponseModel>> getServices(String token) {
+        return LiveDataReactiveStreams.fromPublisher(
+                mainClient.create(ProductSaleService.class)
+                        .getServices(token)
+                        .subscribeOn(Schedulers.io())
+                        .onErrorReturn(exception -> {
+                            exception.printStackTrace();
+
+                            if (exception.getClass() == HttpException.class)
+                                return Response.error(((HttpException) exception).code(), ResponseBody.create(null, ""));
+
+                            return Response.error(BaseResponseModel.FAILED_REQUEST_FAILURE, ResponseBody.create(null, ""));
+                        })
+                        .toFlowable(BackpressureStrategy.LATEST)
+        );
+    }
+
+
     public LiveData<Response<ProductSalePageResponseModel>> getProductSale(String token, long productId) {
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(ProductSaleService.class)
