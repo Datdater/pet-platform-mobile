@@ -27,6 +27,7 @@ public class AuthRepository {
     }
 
     public LiveData<Response<UserResponseModel>> signIn(SignInModel signInModel) {
+        System.out.println("model" + signInModel.toString());
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(AuthService.class)
                         .signIn(signInModel)

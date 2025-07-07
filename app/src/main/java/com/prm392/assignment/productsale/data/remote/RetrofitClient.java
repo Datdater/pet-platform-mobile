@@ -5,7 +5,7 @@ import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String mainClientUrl = "https://productsales-fda2fmhsdzd4dsa2.southeastasia-01.azurewebsites.net/api/";
+    private static final String mainClientUrl = "https://prn-222.food/api/v1/";
     private static Retrofit mainClient;
 
     private RetrofitClient() { // apply singleton pattern

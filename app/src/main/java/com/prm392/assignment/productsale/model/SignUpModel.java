@@ -23,4 +23,7 @@ public class SignUpModel {
 
     @SerializedName("address")
     private String address;
+
+    public void setUsername(String username) {
+    }
 }
