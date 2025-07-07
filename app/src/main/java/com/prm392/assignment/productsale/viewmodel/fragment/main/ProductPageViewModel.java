@@ -26,16 +26,12 @@ import retrofit2.Response;
 public class ProductPageViewModel extends ViewModel {
     private final ProductsSaleRepository productsSaleRepository;
 
-    private long productId;
+    private String productId;
     private final String token;
 
     @Getter
     @Setter
-    private ProductSaleModel productSaleModel;
-
-    @Getter
-    @Setter
-    private StoreLocation storeLocation;
+    private ProductSalePageResponseModel productSaleModel;
 
     @Getter
     @Setter
@@ -71,7 +67,7 @@ public class ProductPageViewModel extends ViewModel {
         return productsSaleRepository.addProductToCart(token, addProductCartModel);
     }
 
-    public void setProductId(long productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
