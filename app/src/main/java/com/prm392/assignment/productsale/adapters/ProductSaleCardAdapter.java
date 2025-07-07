@@ -78,7 +78,6 @@ public class ProductSaleCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (viewHolder instanceof DataViewHolder) {
             ProductSaleCardAdapter.DataViewHolder holder = (ProductSaleCardAdapter.DataViewHolder) viewHolder;
 
-
             holder.name.setText(data.get(position).getProductName());
             holder.category.setText(data.get(position).getCategoryName());
             holder.price.setText(data.get(position).getCurrencyPrice());

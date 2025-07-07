@@ -44,8 +44,8 @@ public interface ProductSaleService {
     Observable<Response<ServiceResponseModel>> getServices(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
-    @GET("product/{productId}")
-    Observable<Response<ProductSalePageResponseModel>> getProductSale(@Header("Authorization") String token, @Path("productId") long productId);
+    @GET("products/{id}")
+    Observable<Response<ProductSalePageResponseModel>> getProductSale(@Header("Authorization") String token, @Path("id") String productId);
 
     @Headers({"client: mobile"})
     @POST("cart")

@@ -142,7 +142,7 @@
     <string name="password">Password</string>
     <string name="name">Name</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="search_for_product">Search For Product ...</string>
+    <string name="search_for_product">Tìm kiếm sản phẩm</string>
     <string name="About">About</string>
     <string name="Session_Expired">Session Expired !</string>
     <string name="You_are_signed_out_for_account_security">You are signed out for account security\nPlease sign in again.</string>

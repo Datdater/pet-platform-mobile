@@ -34,7 +34,7 @@ public class ProductSaleModel {
     private String categoryName;
 
     public String getCurrencyPrice() {
-        return price + "đ";
+        return (int)price + "đ";
     }
 
     public String getProductName() { return productName; }

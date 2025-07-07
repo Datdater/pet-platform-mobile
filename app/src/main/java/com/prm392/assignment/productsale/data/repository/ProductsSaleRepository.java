@@ -67,6 +67,7 @@ public class ProductsSaleRepository {
 
 
     public LiveData<Response<ProductSalePageResponseModel>> getProductSale(String token, long productId) {
+    public LiveData<Response<ProductSalePageResponseModel>> getProductSale(String token, String productId) {
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(ProductSaleService.class)
                         .getProductSale(token, productId)
