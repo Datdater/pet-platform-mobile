@@ -260,7 +260,7 @@ public class ProductPageFragment extends Fragment {
         StoreLocation storeLocation = viewModel.getStoreLocation();
         vb.productPageBrand.setText(productSaleModel.getCategoryName());
         Double productPrice = Double.parseDouble(String.format("%.2f", productSaleModel.getPrice()));
-        vb.productPagePrice.setText(productPrice + "$");
+        vb.productPagePrice.setText(productPrice + "đ");
         vb.txtQuantity.setText(viewModel.getProductQuantity() + "");
 
         Glide.with(this)
@@ -268,44 +268,9 @@ public class ProductPageFragment extends Fragment {
                 .transition(DrawableTransitionOptions.withCrossFade(100))
                 .into(vb.productPageImage);
 
-        vb.productPageBrand.setText(productSaleModel.getCategoryName());
+//        vb.productPageBrand.setText(productSaleModel.getCategoryName());
         vb.productPageTitle.setText(productSaleModel.getProductName());
-        vb.productPageDescription.setText(productSaleModel.getBriefDescription());
-        vb.productSaleFullDescription.setText(productSaleModel.getFullDescription());
-        vb.productSaleTechSpecsText.setText(productSaleModel.getTechnicalSpecifications());
         addProductOnMap(storeLocation.getLatitude(), storeLocation.getLongitude(), storeLocation.getAddress());
-
-        String fullDescription = productSaleModel.getFullDescription();
-
-        if (fullDescription.length() > 120) {
-            String shortDescription = fullDescription.substring(0, 110) + "... ";
-
-            SpannableString readMore = new SpannableString(getString(R.string.Read_More));
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(@NonNull View widget) {
-
-                    vb.productSaleFullDescription.animate().alpha(0).setDuration(250).withEndAction(() -> {
-                        vb.productSaleFullDescription.setText(fullDescription);
-                        vb.productSaleFullDescription.animate().alpha(1f).setDuration(250).start();
-                    }).start();
-
-                }
-
-                @Override
-                public void updateDrawState(@NonNull TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                }
-            };
-
-            readMore.setSpan(clickableSpan, 0, readMore.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            vb.productSaleFullDescription.setText(shortDescription);
-            vb.productSaleFullDescription.append(readMore);
-            vb.productSaleFullDescription.setMovementMethod(LinkMovementMethod.getInstance());
-
-        } else vb.productSaleFullDescription.setText(fullDescription);
-
     }
 
     private void addProductOnMap(double lat, double lng, String storeName) {

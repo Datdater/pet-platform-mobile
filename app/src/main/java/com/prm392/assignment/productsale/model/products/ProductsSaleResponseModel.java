@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 public class ProductsSaleResponseModel extends BaseResponseModel {
 
-    @SerializedName("totalItemsCount")
+    @SerializedName("totalCount")
     private int totalItemsCount;
 
     @SerializedName("pageSize")
@@ -21,13 +21,10 @@ public class ProductsSaleResponseModel extends BaseResponseModel {
     @SerializedName("pageIndex")
     private int pageIndex;
 
-    @SerializedName("totalPagesCount")
-    private int totalPagesCount;
-
-    @SerializedName("next")
+    @SerializedName("hasNextPage")
     private boolean next;
 
-    @SerializedName("previous")
+    @SerializedName("hasPreviousPage")
     private boolean previous;
 
     @SerializedName("items")

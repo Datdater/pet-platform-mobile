@@ -29,9 +29,9 @@ public interface ProductSaleService {
 //    Observable<Response<ProductsSaleResponseModel>> getDemoProducts(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
-    @GET("product")
+    @GET("products")
     Observable<Response<ProductsSaleResponseModel>> getProducts(@Header("Authorization") String token,
-                                                                @Query("pageIndex") Integer pageIndex,
+                                                                @Query("pageNumber") Integer pageIndex,
                                                                 @Query("pageSize") Integer pageSize,
                                                                 @Query("search") String search,
                                                                 @Query("sortBy") String sortBy,

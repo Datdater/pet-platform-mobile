@@ -141,9 +141,9 @@ public class ProductSaleCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public interface ItemInteractionListener {
-        void onProductClicked(long productId, String storeType);
+        void onProductClicked(String productId, String storeType);
 
-        void onProductAddedToFav(long productId, boolean favChecked);
+        void onProductAddedToFav(String productId, boolean favChecked);
 
         void onLoadMoreClicked();
     }

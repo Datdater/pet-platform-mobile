@@ -94,14 +94,14 @@ public class SearchFragment extends Fragment {
 
         adapter.setItemInteractionListener(new ProductSaleCardAdapter.ItemInteractionListener() {
             @Override
-            public void onProductClicked(long productId, String storeType) {
+            public void onProductClicked(String productId, String storeType) {
                 Bundle bundle = new Bundle();
-                bundle.putLong("productId", productId);
+                bundle.putString("productId", productId);
                 navController.navigate(R.id.action_homeFragment_to_productPageFragment, bundle);
             }
 
             @Override
-            public void onProductAddedToFav(long productId, boolean favChecked) {
+            public void onProductAddedToFav(String productId, boolean favChecked) {
 //                setFavourite(productId, favChecked);
             }
 
