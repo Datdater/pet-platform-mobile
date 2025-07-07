@@ -14,6 +14,7 @@ import com.prm392.assignment.productsale.data.repository.ProductsSaleRepository;
 import com.prm392.assignment.productsale.model.categories.CategoriesResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductSortAndFilterModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
+import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 import com.prm392.assignment.productsale.util.UserAccountManager;
 
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +61,10 @@ public class SearchViewModel extends ViewModel {
     public LiveData<Response<ProductsSaleResponseModel>> getProducts() {
         List<Integer> categoryIds = new ArrayList<>(productSortAndFilterModel.getCategories());
         return productsRepository.getProducts(token, productSortAndFilterModel.getPageIndex(), productSortAndFilterModel.getPageSize(), searchStr, productSortAndFilterModel.getSortBy(), productSortAndFilterModel.getSortDescending(), productSortAndFilterModel.getMinPrice(), productSortAndFilterModel.getMaxPrice(), categoryIds.isEmpty() ? null : categoryIds);
+    }
+
+    public LiveData<Response<ServiceResponseModel>> getServices() {
+        return productsRepository.getServices(token);
     }
 
     public void removeObserverProducts(LifecycleOwner lifecycleOwner) {

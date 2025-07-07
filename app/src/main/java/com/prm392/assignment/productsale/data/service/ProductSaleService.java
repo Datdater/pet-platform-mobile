@@ -40,7 +40,7 @@ public interface ProductSaleService {
                                                                 @Query("minPrice") Double minPrice,
                                                                 @Query("maxPrice") Double maxPrice,
                                                                 @Query("categoryIds") List<Integer> categoryIds);
-    @GET("product/demo")
+    @GET("services")
     Observable<Response<ServiceResponseModel>> getServices(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
