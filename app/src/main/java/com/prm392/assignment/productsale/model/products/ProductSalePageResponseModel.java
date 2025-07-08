@@ -68,6 +68,8 @@ public class ProductSalePageResponseModel {
     @Getter
     @Setter
     public static class Variant {
+        @SerializedName("id")
+        private String Id;
         @SerializedName("attributes")
         private Map<String, String> attributes;
 

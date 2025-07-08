@@ -5,6 +5,7 @@ import com.prm392.assignment.productsale.model.cart.AddProductCartModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.model.cart.CartTotalResponse;
 import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
+import com.prm392.assignment.productsale.model.products.ProductVariantModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
 import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 
@@ -48,7 +49,7 @@ public interface ProductSaleService {
     Observable<Response<ProductSalePageResponseModel>> getProductSale(@Header("Authorization") String token, @Path("id") String productId);
 
     @Headers({"client: mobile"})
-    @POST("cart")
+    @POST("cart/items")
     Observable<Response<BaseResponseModel>> addToCart(@Header("Authorization") String token, @Body AddProductCartModel addProductCartModel);
     @Headers({"client: mobile"})
     @GET("cart/{userId}")
@@ -86,4 +87,10 @@ public interface ProductSaleService {
             @Query("PaymentMethod") String paymentMethod,
             @Query("BillingAddress") String billingAddress
     );
+
+    @Headers({"client: mobile"})
+    @GET("productVariants/{id}")
+    Observable<Response<ProductVariantModel>> getProductVariant( @Path("id") String productId);
+
+
 }

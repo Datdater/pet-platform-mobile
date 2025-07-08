@@ -20,7 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,9 +58,14 @@ import com.prm392.assignment.productsale.view.activity.MainActivity;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.ProductPageViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import lecho.lib.hellocharts.view.LineChartView;
@@ -67,6 +76,7 @@ public class ProductPageFragment extends Fragment {
     private ProductPageViewModel viewModel;
     private NavController navController;
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
+    private String productVariantId;
 
     private GoogleMap googleMap;
 
@@ -171,7 +181,7 @@ public class ProductPageFragment extends Fragment {
         //Add to cart
         vb.addToCartBtn.setOnClickListener(button -> {
             vb.productPageLoadingPage.setVisibility(View.VISIBLE);
-            viewModel.addProductToCart().observe(getViewLifecycleOwner(), response -> {
+            viewModel.addProductToCart(this.productVariantId).observe(getViewLifecycleOwner(), response -> {
                 vb.productPageLoadingPage.setVisibility(View.GONE);
                 viewModel.setProductQuantity(1);
                 vb.txtQuantity.setText("1");
@@ -260,19 +270,31 @@ public class ProductPageFragment extends Fragment {
 
     void renderProductSaleData() {
         ProductSalePageResponseModel productSaleModel = viewModel.getProductSaleModel();
+        Map<String, Set<String>> availableAttributeValues = new HashMap<>();
+        Map<String, String> selectedAttributes = new HashMap<>(); // user selections
 
-        // Set basic product information
+        for (ProductSalePageResponseModel.Variant variant : productSaleModel.getVariants()) {
+            for (Map.Entry<String, String> entry : variant.getAttributes().entrySet()) {
+                availableAttributeValues
+                        .computeIfAbsent(entry.getKey(), k -> new HashSet<>())
+                        .add(entry.getValue());
+            }
+        }
+
+        // --- Set product info ---
         vb.productPageBrand.setText(productSaleModel.getCategoryName());
         vb.productPageTitle.setText(productSaleModel.getName());
         vb.productPageDescription.setText(productSaleModel.getDescription());
-
-        // Set quantity
-        vb.txtQuantity.setText(viewModel.getProductQuantity() + "");
-
-        // Set price - use basePrice from new model
+        vb.txtQuantity.setText(String.valueOf(viewModel.getProductQuantity()));
         vb.productPagePrice.setText(String.format("%.0fLE", productSaleModel.getBasePrice()));
+        vb.textView18.setText("Store: " + productSaleModel.getStoreName());
+        vb.productSaleTechSpecsText.setText(buildTechSpecs(productSaleModel));
+        vb.productSaleFullDescription.setText(productSaleModel.getDescription());
+        vb.productRating.setText(String.valueOf(productSaleModel.getStarAverage()));
+        vb.reviewCount.setText(productSaleModel.getReviewCount() + " reviews");
+        vb.soldCount.setText(productSaleModel.getSold() + " sold");
 
-        // Load main image
+        // --- Load main image ---
         String mainImageUrl = getMainImageUrl(productSaleModel.getImages());
         if (mainImageUrl != null && !mainImageUrl.isEmpty()) {
             Glide.with(this)
@@ -281,22 +303,47 @@ public class ProductPageFragment extends Fragment {
                     .into(vb.productPageImage);
         }
 
-        // Set store information
-        vb.textView18.setText("Store: " + productSaleModel.getStoreName());
+        // --- Render Variant Spinners ---
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        vb.productVariantSection.removeAllViews();
 
-        // Set technical specifications (using product dimensions and weight)
-        String techSpecs = buildTechSpecs(productSaleModel);
-        vb.productSaleTechSpecsText.setText(techSpecs);
+        for (Map.Entry<String, Set<String>> entry : availableAttributeValues.entrySet()) {
+            String attrName = entry.getKey();
+            List<String> values = new ArrayList<>(entry.getValue());
 
-        // Set full description
-        vb.productSaleFullDescription.setText(productSaleModel.getDescription());
+            View variantView = inflater.inflate(R.layout.item_variant_spinner, vb.productVariantSection, false);
+            TextView label = variantView.findViewById(R.id.variant_label);
+            Spinner spinner = variantView.findViewById(R.id.variant_spinner);
+            label.setText(attrName);
 
-//         Update rating and reviews info if you have UI elements for them
-         vb.productRating.setText(String.valueOf(productSaleModel.getStarAverage()));
-         vb.reviewCount.setText(productSaleModel.getReviewCount() + " reviews");
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, values);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
 
-//         Update sold count if you have UI element for it
-         vb.soldCount.setText(productSaleModel.getSold() + " sold");
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    selectedAttributes.put(attrName, values.get(position));
+                    updatePriceBySelectedVariant(productSaleModel.getVariants(), selectedAttributes);
+                }
+                @Override public void onNothingSelected(AdapterView<?> parent) {}
+            });
+
+            vb.productVariantSection.addView(variantView);
+        }
+    }
+    private void updatePriceBySelectedVariant(List<ProductSalePageResponseModel.Variant> variants, Map<String, String> selectedAttrs) {
+        for (ProductSalePageResponseModel.Variant variant : variants) {
+            if (variant.getAttributes().entrySet().containsAll(selectedAttrs.entrySet())) {
+                vb.productPagePrice.setText(String.format("%.0fLE", variant.getPrice()));
+                // Nếu muốn cập nhật stock:
+                // vb.productStock.setText("In stock: " + variant.getStock());
+                this.productVariantId = variant.getId();
+                return;
+            }
+        }
+
+        // Nếu không có tổ hợp phù hợp:
+        vb.productPagePrice.setText("Không có giá"); // hoặc ẩn, hoặc đặt lại basePrice
     }
 
     private String getMainImageUrl(List<ProductSalePageResponseModel.Image> images) {
