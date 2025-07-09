@@ -20,6 +20,7 @@ public class CartRepository {
 
     private final Retrofit mainClient;
 
+
     // Headers
     private static final String AUTHORIZATION = "Authorization";
 
@@ -27,10 +28,10 @@ public class CartRepository {
         mainClient = RetrofitClient.getMainInstance();
     }
 
-    public LiveData<Response<CartModel>> getCart(String token, int userId) {
+    public LiveData<Response<CartModel>> getCart(String token) {
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(ProductSaleService.class)
-                        .getCart(token, userId)
+                        .getCart(token)
                         .subscribeOn(Schedulers.io())
                         .onErrorReturn(exception -> {
                             exception.printStackTrace();
@@ -44,7 +45,7 @@ public class CartRepository {
         );
     }
 
-    public LiveData<Response<BaseResponseModel>> removeItemFromCart(String token, int userId, int productId) {
+    public LiveData<Response<BaseResponseModel>> removeItemFromCart(String token, String userId, String productId) {
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(ProductSaleService.class)
                         .removeItemFromCart(token, userId, productId)
@@ -78,7 +79,7 @@ public class CartRepository {
         );
     }
 
-    public LiveData<Response<BaseResponseModel>> clearCart(String token, int userId) {
+    public LiveData<Response<BaseResponseModel>> clearCart(String token, String userId) {
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(ProductSaleService.class)
                         .clearCart(token, userId) // Gọi API clearCart
@@ -113,7 +114,7 @@ public class CartRepository {
     }
 
     public LiveData<Response<BaseResponseModel>> completePaymentAndConvertCartToOrder(
-            String token, int userId, String paymentMethod, String billingAddress) {
+            String token, String userId, String paymentMethod, String billingAddress) {
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(ProductSaleService.class)
                         .completePaymentAndConvertCartToOrder(token, userId, paymentMethod, billingAddress)

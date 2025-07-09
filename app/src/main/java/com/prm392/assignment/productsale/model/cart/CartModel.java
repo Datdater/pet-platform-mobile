@@ -19,12 +19,12 @@ public class CartModel {
     private int cartId;
 
     @SerializedName(value = "userId")
-    private int userId;
+    private String userId;
 
     @SerializedName(value = "totalPrice")
     private float totalPrice;
 
-    @SerializedName("cartItems")
+    @SerializedName("items")
     private ArrayList<CartItemModel> cartItems;
 
 }

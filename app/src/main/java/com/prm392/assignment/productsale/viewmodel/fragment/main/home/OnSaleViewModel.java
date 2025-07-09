@@ -63,12 +63,12 @@ public class OnSaleViewModel extends ViewModel {
             }
     );
     // Lấy giỏ hàng của người dùng
-    public LiveData<Response<CartModel>> getCart(int userId) {
-        cartLiveData = cartRepository.getCart(token, userId);
+    public LiveData<Response<CartModel>> getCart() {
+        cartLiveData = cartRepository.getCart(token);
         return cartLiveData;
     }
 
-    public LiveData<Response<BaseResponseModel>> removeCartItem(int userId, int productId) {
+    public LiveData<Response<BaseResponseModel>> removeCartItem(String userId, String productId) {
         return cartRepository.removeItemFromCart(token, userId, productId);
     }
 
@@ -76,7 +76,7 @@ public class OnSaleViewModel extends ViewModel {
         return cartRepository.updateCartItemQuantity(token,userId,productId,quantity);
     }
 
-    public LiveData<Response<BaseResponseModel>> clearCart(int userId) {
+    public LiveData<Response<BaseResponseModel>> clearCart(String userId) {
         return cartRepository.clearCart(token, userId);
     }
 

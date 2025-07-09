@@ -10,22 +10,29 @@ import lombok.Setter;
 @Setter
 public class CartItemModel {
     @SerializedName(value = "cartItemId")
-    private int cartItemId;
+    private String cartItemId;
 
-    @SerializedName(value = "cartId")
-    private int cartId;
+    @SerializedName(value = "id")
+    private String cartId;
 
-    @SerializedName(value = "productId")
-    private int productId;
+    @SerializedName(value = "productVariantId")
+    private String productId;
 
     @SerializedName(value = "quantity")
     private int quantity;
 
-    @SerializedName(value = "price")
+    @SerializedName(value = "unitPrice")
     private float price;
 
-    @SerializedName(value = "product")
-    private ProductSaleModel product;
+    @SerializedName(value = "pictureUrl")
+    private String pictureUrl;
+    @SerializedName(value = "storeUrl")
+    private String storeUrl;
+    @SerializedName(value = "storeName")
+    private String storeName;
+
+    @SerializedName(value = "productName")
+    private String productName;
 }
 
 

@@ -129,35 +129,36 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             DataViewHolder holder  = (DataViewHolder) viewHolder;
             CartItemModel cartItem = data.get(position);
 
-            holder.productName.setText(data.get(position).getProduct().getProductName());
-//            holder.brand.setText((data.get(position).getProduct().getCategory().getCategoryName()));
+            holder.productName.setText(data.get(position).getProductName());
+            holder.brand.setText((data.get(position).getStoreName()));
             holder.productPrice.setText(String.format("%s %s", data.get(position).getPrice(), context.getString(R.string.currency)));
             holder.productQuantity.setText(String.valueOf(data.get(position).getQuantity()));
+//            holder.productImage.setImageURI(Uri.parse(data.get(position).getProduct().getProductImage()));
             Glide.with(context)
-                    .load(Uri.parse(data.get(position).getProduct().getProductImage()))
+                    .load(Uri.parse(data.get(position).getPictureUrl()))
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade(250))
                     .into(holder.productImage);
 
             holder.increaseButton.setOnClickListener(v -> {
-                int updatedQuantity = cartItem.getQuantity() + 1;
-                cartItem.setQuantity(updatedQuantity);
-                cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
-                holder.productQuantity.setText(String.valueOf(updatedQuantity));
-                holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
-                updateCartItemQuantity(cartItem);  // Call API to update quantity
+//                int updatedQuantity = cartItem.getQuantity() + 1;
+//                cartItem.setQuantity(updatedQuantity);
+//                cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
+//                holder.productQuantity.setText(String.valueOf(updatedQuantity));
+//                holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
+//                updateCartItemQuantity(cartItem);  // Call API to update quantity
             });
 
             // Handle decrease button click
             holder.decreaseButton.setOnClickListener(v -> {
-                if (cartItem.getQuantity() > 1) {  // Prevent going below 1
-                    int updatedQuantity = cartItem.getQuantity() - 1;
-                    cartItem.setQuantity(updatedQuantity);
-                    cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
-                    holder.productQuantity.setText(String.valueOf(updatedQuantity));
-                    holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
-                    updateCartItemQuantity(cartItem);  // Call API to update quantity
-                }
+//                if (cartItem.getQuantity() > 1) {  // Prevent going below 1
+//                    int updatedQuantity = cartItem.getQuantity() - 1;
+//                    cartItem.setQuantity(updatedQuantity);
+//                    cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
+//                    holder.productQuantity.setText(String.valueOf(updatedQuantity));
+//                    holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
+//                    updateCartItemQuantity(cartItem);  // Call API to update quantity
+//                }
             });
 
             holder.deleteCheckBox.setOnClickListener(v -> {
@@ -168,36 +169,36 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void updateCartItemQuantity(CartItemModel cartItem) {
-        int userId = viewModel.getUserModel().getId();
-        int productId = cartItem.getProductId(); // Get the product ID
-        int newQuantity = cartItem.getQuantity(); // Get the updated quantity
-
-
-        // Call the ViewModel's method to update the cart item quantity
-        viewModel.updateCartItem(userId, productId, newQuantity).observe(lifecycleOwner, response -> {
-            switch (response.code()) {
-                case BaseResponseModel.SUCCESSFUL_OPERATION:
-                    // If the update is successful, notify the user
-                    Toast.makeText(context, "Cart item updated successfully", Toast.LENGTH_SHORT).show();
-                    getCartTotalPrice();
-                    break;
-
-                case BaseResponseModel.FAILED_REQUEST_FAILURE:
-                    // If the update fails, show an error
-                    Toast.makeText(context, "Error: Failed to update cart item", Toast.LENGTH_SHORT).show();
-                    break;
-
-                default:
-                    // Handle any other errors
-                    Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        });
+//        int userId = viewModel.getUserModel().getId();
+//        int productId = cartItem.getProductId(); // Get the product ID
+//        int newQuantity = cartItem.getQuantity(); // Get the updated quantity
+//
+//
+//        // Call the ViewModel's method to update the cart item quantity
+//        viewModel.updateCartItem(userId, productId, newQuantity).observe(lifecycleOwner, response -> {
+//            switch (response.code()) {
+//                case BaseResponseModel.SUCCESSFUL_OPERATION:
+//                    // If the update is successful, notify the user
+//                    Toast.makeText(context, "Cart item updated successfully", Toast.LENGTH_SHORT).show();
+//                    getCartTotalPrice();
+//                    break;
+//
+//                case BaseResponseModel.FAILED_REQUEST_FAILURE:
+//                    // If the update fails, show an error
+//                    Toast.makeText(context, "Error: Failed to update cart item", Toast.LENGTH_SHORT).show();
+//                    break;
+//
+//                default:
+//                    // Handle any other errors
+//                    Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+//                    break;
+//            }
+//        });
     }
 
     public void removeCartItem(CartItemModel cartItem) {
-        int userId = viewModel.getUserModel().getId();
-        int productId = cartItem.getProductId(); // Lấy productId của item cần xóa
+        String userId = viewModel.getUserModel().getId();
+        String productId = cartItem.getProductId(); // Lấy productId của item cần xóa
 
         // Gọi phương thức removeCartItem từ ViewModel
             viewModel.removeCartItem(userId, productId).observe(lifecycleOwner, response -> {
@@ -262,18 +263,18 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //    }
 
     private void getCartTotalPrice() {
-        int userId = viewModel.getUserModel().getId();
+        String userId = viewModel.getUserModel().getId();
 
         // Gọi API để lấy tổng giá trị giỏ hàng từ server
-        viewModel.getCartTotal(userId).observe(lifecycleOwner, response -> {
-            if (response != null && response.body() != null) {
-                // Lấy tổng giá trị từ response và cập nhật vào giao diện
-                double totalPrice = response.body().getTotal();
-                viewModel.updateTotalPrice(totalPrice);  // Cập nhật giá trị tổng vào ViewModel
-            } else {
-                Toast.makeText(context, "Failed to fetch cart total", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        viewModel.getCartTotal(userId).observe(lifecycleOwner, response -> {
+//            if (response != null && response.body() != null) {
+//                // Lấy tổng giá trị từ response và cập nhật vào giao diện
+//                double totalPrice = response.body().getTotal();
+//                viewModel.updateTotalPrice(totalPrice);  // Cập nhật giá trị tổng vào ViewModel
+//            } else {
+//                Toast.makeText(context, "Failed to fetch cart total", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     public void addCartItems(ArrayList<CartItemModel> cartItems) {

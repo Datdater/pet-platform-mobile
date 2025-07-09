@@ -124,7 +124,7 @@ public class CheckoutPageFragment extends Fragment {
 
     void loadCheckoutData() {
         vb.checkoutPageLoadingPage.setVisibility(View.VISIBLE);
-        int userId = viewModel.getUserModel().getId();
+        String userId = viewModel.getUserModel().getId();
         // Lấy giỏ hàng từ ViewModel
         viewModel.getCart(userId).observe(getViewLifecycleOwner(), response -> {
             switch (response.code()) {

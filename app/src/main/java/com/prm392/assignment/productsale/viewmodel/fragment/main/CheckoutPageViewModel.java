@@ -90,19 +90,19 @@ public class CheckoutPageViewModel extends ViewModel {
     );
 
     public LiveData<Response<BaseResponseModel>> completePaymentAndConvertCartToOrder(
-            int userId, String paymentMethod, String billingAddress) {
+            String userId, String paymentMethod, String billingAddress) {
         return cartRepository.completePaymentAndConvertCartToOrder(token, userId, paymentMethod, billingAddress);
     }
 
-    public LiveData<Response<CartModel>> getCart(int userId) {
-        cartLiveData = cartRepository.getCart(token, userId);
+    public LiveData<Response<CartModel>> getCart(String userId) {
+        cartLiveData = cartRepository.getCart(token);
         return cartLiveData;
     }
 
     public void buyNow(Context context){
         if(paymentMethod == "Cash"){
         if (cartModel == null) return;
-        int userId = userModel.getId();
+        String userId = userModel.getId();
         String billingAddress = "Billing Address Placeholder";
 
         completePaymentAndConvertCartToOrder(userId, "Cash", billingAddress).observeForever(response -> {

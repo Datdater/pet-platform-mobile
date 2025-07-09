@@ -52,12 +52,12 @@ public interface ProductSaleService {
     @POST("cart/items")
     Observable<Response<BaseResponseModel>> addToCart(@Header("Authorization") String token, @Body AddProductCartModel addProductCartModel);
     @Headers({"client: mobile"})
-    @GET("cart/{userId}")
-    Observable<Response<CartModel>> getCart(@Header("Authorization") String token, @Path("userId") int userId);
+    @GET("cart")
+    Observable<Response<CartModel>> getCart(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
     @DELETE("cart/remove-item")
-    Observable<Response<BaseResponseModel>> removeItemFromCart(@Header("Authorization") String token, @Query("userId") int userId, @Query("productId") int productId);
+    Observable<Response<BaseResponseModel>> removeItemFromCart(@Header("Authorization") String token, @Query("userId") String userId, @Query("productId") String productId);
 
     @Headers({"client: mobile"})
     @PUT("cart/update-item")
@@ -72,7 +72,7 @@ public interface ProductSaleService {
     @DELETE("cart/clear")
     Observable<Response<BaseResponseModel>> clearCart(
             @Header("Authorization") String token,
-            @Query("userId") int userId
+            @Query("userId") String userId
     );
 
     @Headers({"client: mobile"})
@@ -83,7 +83,7 @@ public interface ProductSaleService {
     @POST("cart/complete-payment")
     Observable<Response<BaseResponseModel>> completePaymentAndConvertCartToOrder(
             @Header("Authorization") String token,
-            @Query("userId") int userId,
+            @Query("userId") String userId,
             @Query("PaymentMethod") String paymentMethod,
             @Query("BillingAddress") String billingAddress
     );
