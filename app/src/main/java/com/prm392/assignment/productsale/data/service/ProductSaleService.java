@@ -1,9 +1,11 @@
 package com.prm392.assignment.productsale.data.service;
 
 import com.prm392.assignment.productsale.model.BaseResponseModel;
+import com.prm392.assignment.productsale.model.address.GetAllAddressResponseModel;
 import com.prm392.assignment.productsale.model.cart.AddProductCartModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.model.cart.CartTotalResponse;
+import com.prm392.assignment.productsale.model.cart.UpdateCartModel;
 import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductVariantModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
@@ -56,23 +58,20 @@ public interface ProductSaleService {
     Observable<Response<CartModel>> getCart(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
-    @DELETE("cart/remove-item")
-    Observable<Response<BaseResponseModel>> removeItemFromCart(@Header("Authorization") String token, @Query("userId") String userId, @Query("productId") String productId);
+    @DELETE("cart/items/{id}")
+    Observable<Response<BaseResponseModel>> removeItemFromCart(@Header("Authorization") String token, @Path("id") String cartId);
 
     @Headers({"client: mobile"})
-    @PUT("cart/update-item")
+    @POST("cart")
     Observable<Response<BaseResponseModel>> updateCartItemQuantity(
             @Header("Authorization") String token,
-            @Query("userId") int userId,
-            @Query("productId") int productId,
-            @Query("quantity") int quantity
-    );
+            @Body UpdateCartModel updateCartModel
+            );
 
     @Headers({"client: mobile"})
-    @DELETE("cart/clear")
+    @DELETE("cart")
     Observable<Response<BaseResponseModel>> clearCart(
-            @Header("Authorization") String token,
-            @Query("userId") String userId
+            @Header("Authorization") String token
     );
 
     @Headers({"client: mobile"})
@@ -91,6 +90,5 @@ public interface ProductSaleService {
     @Headers({"client: mobile"})
     @GET("productVariants/{id}")
     Observable<Response<ProductVariantModel>> getProductVariant( @Path("id") String productId);
-
 
 }

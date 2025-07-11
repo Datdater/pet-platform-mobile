@@ -16,6 +16,7 @@ import com.prm392.assignment.productsale.model.ProductsResponseModel;
 import com.prm392.assignment.productsale.model.UserModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.model.cart.CartTotalResponse;
+import com.prm392.assignment.productsale.model.cart.UpdateCartModel;
 import com.prm392.assignment.productsale.util.UserAccountManager;
 
 import lombok.Getter;
@@ -62,22 +63,23 @@ public class OnSaleViewModel extends ViewModel {
                 return new OnSaleViewModel(app);
             }
     );
+
     // Lấy giỏ hàng của người dùng
     public LiveData<Response<CartModel>> getCart() {
         cartLiveData = cartRepository.getCart(token);
         return cartLiveData;
     }
 
-    public LiveData<Response<BaseResponseModel>> removeCartItem(String userId, String productId) {
-        return cartRepository.removeItemFromCart(token, userId, productId);
+    public LiveData<Response<BaseResponseModel>> removeCartItem( String cartId) {
+        return cartRepository.removeItemFromCart(token, cartId);
     }
 
-    public LiveData<Response<BaseResponseModel>> updateCartItem(int userId, int productId, int quantity) {
-        return cartRepository.updateCartItemQuantity(token,userId,productId,quantity);
+    public LiveData<Response<BaseResponseModel>> updateCartItem(UpdateCartModel model) {
+        return cartRepository.updateCartItemQuantity(token,model);
     }
 
-    public LiveData<Response<BaseResponseModel>> clearCart(String userId) {
-        return cartRepository.clearCart(token, userId);
+    public LiveData<Response<BaseResponseModel>> clearCart() {
+        return cartRepository.clearCart(token);
     }
 
 }

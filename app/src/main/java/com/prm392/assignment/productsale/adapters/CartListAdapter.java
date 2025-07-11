@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
@@ -28,6 +29,7 @@ import com.prm392.assignment.productsale.model.ProductModel;
 import com.prm392.assignment.productsale.model.UserModel;
 import com.prm392.assignment.productsale.model.cart.CartItemModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
+import com.prm392.assignment.productsale.model.cart.UpdateCartModel;
 import com.prm392.assignment.productsale.util.AppSettingsManager;
 import com.prm392.assignment.productsale.util.UserAccountManager;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.home.OnSaleViewModel;
@@ -82,6 +84,7 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView productName, productPrice, productQuantity, brand;
         ImageView productImage;
         CheckBox deleteCheckBox;
+        CheckBox productCheckbox;
         ImageButton increaseButton, decreaseButton;
 
         public DataViewHolder(View view) {
@@ -95,6 +98,7 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             deleteCheckBox = view.findViewById(R.id.product_list_item_delete); // Changed ID
             increaseButton = view.findViewById(R.id.increaseBtn);
             decreaseButton = view.findViewById(R.id.decreaseBtn);
+            productCheckbox = view.findViewById(R.id.product_list_item_checkbox);
         }
     }
 
@@ -133,32 +137,36 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.brand.setText((data.get(position).getStoreName()));
             holder.productPrice.setText(String.format("%s %s", data.get(position).getPrice(), context.getString(R.string.currency)));
             holder.productQuantity.setText(String.valueOf(data.get(position).getQuantity()));
+            holder.productCheckbox.setOnCheckedChangeListener(null);
 //            holder.productImage.setImageURI(Uri.parse(data.get(position).getProduct().getProductImage()));
+            holder.productCheckbox.setChecked(data.get(position).isSelected());
             Glide.with(context)
                     .load(Uri.parse(data.get(position).getPictureUrl()))
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade(250))
                     .into(holder.productImage);
-
+            holder.productCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                cartItem.setSelected(isChecked);
+            });
             holder.increaseButton.setOnClickListener(v -> {
-//                int updatedQuantity = cartItem.getQuantity() + 1;
-//                cartItem.setQuantity(updatedQuantity);
-//                cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
-//                holder.productQuantity.setText(String.valueOf(updatedQuantity));
-//                holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
-//                updateCartItemQuantity(cartItem);  // Call API to update quantity
+                int updatedQuantity = cartItem.getQuantity() + 1;
+                cartItem.setQuantity(updatedQuantity);
+                cartItem.setPrice(cartItem.getPrice());
+                holder.productQuantity.setText(String.valueOf(updatedQuantity));
+                holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
+                updateCartItemQuantity(cartItem);  // Call API to update quantity
             });
 
             // Handle decrease button click
             holder.decreaseButton.setOnClickListener(v -> {
-//                if (cartItem.getQuantity() > 1) {  // Prevent going below 1
-//                    int updatedQuantity = cartItem.getQuantity() - 1;
-//                    cartItem.setQuantity(updatedQuantity);
-//                    cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
-//                    holder.productQuantity.setText(String.valueOf(updatedQuantity));
-//                    holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
-//                    updateCartItemQuantity(cartItem);  // Call API to update quantity
-//                }
+                if (cartItem.getQuantity() > 1) {  // Prevent going below 1
+                    int updatedQuantity = cartItem.getQuantity() - 1;
+                    cartItem.setQuantity(updatedQuantity);
+                    cartItem.setPrice(cartItem.getPrice());
+                    holder.productQuantity.setText(String.valueOf(updatedQuantity));
+                    holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
+                    updateCartItemQuantity(cartItem);  // Call API to update quantity
+                }
             });
 
             holder.deleteCheckBox.setOnClickListener(v -> {
@@ -169,39 +177,36 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void updateCartItemQuantity(CartItemModel cartItem) {
-//        int userId = viewModel.getUserModel().getId();
-//        int productId = cartItem.getProductId(); // Get the product ID
-//        int newQuantity = cartItem.getQuantity(); // Get the updated quantity
-//
-//
-//        // Call the ViewModel's method to update the cart item quantity
-//        viewModel.updateCartItem(userId, productId, newQuantity).observe(lifecycleOwner, response -> {
-//            switch (response.code()) {
-//                case BaseResponseModel.SUCCESSFUL_OPERATION:
-//                    // If the update is successful, notify the user
-//                    Toast.makeText(context, "Cart item updated successfully", Toast.LENGTH_SHORT).show();
-//                    getCartTotalPrice();
-//                    break;
-//
-//                case BaseResponseModel.FAILED_REQUEST_FAILURE:
-//                    // If the update fails, show an error
-//                    Toast.makeText(context, "Error: Failed to update cart item", Toast.LENGTH_SHORT).show();
-//                    break;
-//
-//                default:
-//                    // Handle any other errors
-//                    Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-//                    break;
-//            }
-//        });
+        UpdateCartModel model = new UpdateCartModel(cartItem.getCartId(), cartItem.getQuantity());
+
+        // Call the ViewModel's method to update the cart item quantity
+        viewModel.updateCartItem(model).observe(lifecycleOwner, response -> {
+            switch (response.code()) {
+                case BaseResponseModel.SUCCESSFUL_OPERATION:
+                    // If the update is successful, notify the user
+                    Toast.makeText(context, "Cart item updated successfully", Toast.LENGTH_SHORT).show();
+                    getCartTotalPrice();
+                    break;
+
+                case BaseResponseModel.FAILED_REQUEST_FAILURE:
+                    // If the update fails, show an error
+                    Toast.makeText(context, "Error: Failed to update cart item", Toast.LENGTH_SHORT).show();
+                    break;
+
+                default:
+                    // Handle any other errors
+                    Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
     }
 
     public void removeCartItem(CartItemModel cartItem) {
         String userId = viewModel.getUserModel().getId();
-        String productId = cartItem.getProductId(); // Lấy productId của item cần xóa
+        String productId = cartItem.getCartId(); // Lấy productId của item cần xóa
 
         // Gọi phương thức removeCartItem từ ViewModel
-            viewModel.removeCartItem(userId, productId).observe(lifecycleOwner, response -> {
+            viewModel.removeCartItem(productId).observe(lifecycleOwner, response -> {
                 switch (response.code()) {
                     case BaseResponseModel.SUCCESSFUL_OPERATION:
                         // Nếu xóa thành công, xóa item khỏi RecyclerView
@@ -301,6 +306,16 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 notifyItemRemoved(index);
             }
         });
+    }
+
+    public List<CartItemModel> getSelectedItems() {
+        List<CartItemModel> selectedItems = new ArrayList<>();
+        for (CartItemModel item : data) {
+            if (item.isSelected()) {
+                selectedItems.add(item);
+            }
+        }
+        return selectedItems;
     }
 
 }

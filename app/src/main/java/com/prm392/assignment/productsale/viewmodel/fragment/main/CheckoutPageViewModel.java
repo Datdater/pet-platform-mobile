@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,9 +21,12 @@ import androidx.navigation.NavController;
 import com.prm392.assignment.productsale.Api.CreateOrder;
 import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.data.repository.CartRepository;
+import com.prm392.assignment.productsale.data.repository.CustomerRepository;
 import com.prm392.assignment.productsale.data.repository.ProductsSaleRepository;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
 import com.prm392.assignment.productsale.model.UserModel;
+import com.prm392.assignment.productsale.model.address.AddressModel;
+import com.prm392.assignment.productsale.model.address.GetAllAddressResponseModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.util.UserAccountManager;
 import com.prm392.assignment.productsale.view.activity.MainActivity;
@@ -31,6 +35,8 @@ import com.prm392.assignment.productsale.view.activity.PaymentNotification;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import lombok.Getter;
@@ -43,6 +49,7 @@ import retrofit2.Response;
 public class CheckoutPageViewModel extends ViewModel {
     private final ProductsSaleRepository productsSaleRepository;
     private final CartRepository cartRepository;
+    private final CustomerRepository customerRepository;
     private LiveData<Response<CartModel>> cartLiveData;
 
     private MutableLiveData<String> paymentResult = new MutableLiveData<>();
@@ -56,6 +63,10 @@ public class CheckoutPageViewModel extends ViewModel {
 
     @Getter
     private final UserModel userModel;
+
+    @Getter
+    @Setter
+    private AddressModel addressModel;
 
     @Getter
     @Setter
@@ -74,6 +85,7 @@ public class CheckoutPageViewModel extends ViewModel {
         app = application;
         cartRepository = new CartRepository();
         productsSaleRepository = new ProductsSaleRepository();
+        customerRepository = new CustomerRepository();
 
         token = UserAccountManager.getToken(application, UserAccountManager.TOKEN_TYPE_BEARER);
         userModel = UserAccountManager.getUser(application);
@@ -92,6 +104,9 @@ public class CheckoutPageViewModel extends ViewModel {
     public LiveData<Response<BaseResponseModel>> completePaymentAndConvertCartToOrder(
             String userId, String paymentMethod, String billingAddress) {
         return cartRepository.completePaymentAndConvertCartToOrder(token, userId, paymentMethod, billingAddress);
+    }
+    public LiveData<Response<GetAllAddressResponseModel>> getAddressCustomer() {
+        return customerRepository.getCustomerAddress(token);
     }
 
     public LiveData<Response<CartModel>> getCart(String userId) {
@@ -120,6 +135,11 @@ public class CheckoutPageViewModel extends ViewModel {
             }
         });
     }}
+
+    public void setDefaultAddressModel() {
+
+    }
+
 //    public void buyNow(Context context) {
 //        if (cartModel == null) return;
 //        CreateOrder orderApi = new CreateOrder();

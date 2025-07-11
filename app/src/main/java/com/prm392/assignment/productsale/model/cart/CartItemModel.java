@@ -3,6 +3,9 @@ package com.prm392.assignment.productsale.model.cart;
 import com.google.gson.annotations.SerializedName;
 import com.prm392.assignment.productsale.model.products.ProductSaleModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +14,7 @@ import lombok.Setter;
 public class CartItemModel {
     @SerializedName(value = "cartItemId")
     private String cartItemId;
-
+    private boolean selected;
     @SerializedName(value = "id")
     private String cartId;
 
@@ -33,6 +36,8 @@ public class CartItemModel {
 
     @SerializedName(value = "productName")
     private String productName;
+
+
 }
 
 

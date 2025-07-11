@@ -91,7 +91,17 @@ public class CartFragment extends Fragment {
         vb.onSaleRecyclerVeiw.setAdapter(adapter);
 
         vb.checkout.setOnClickListener(v -> {
-            navController.navigate(R.id.action_homeFragment_to_checkoutPageFragment);
+            ArrayList<CartItemModel> selectedItems = new ArrayList<>(adapter.getSelectedItems());
+
+            if (selectedItems.isEmpty()) {
+                Toast.makeText(getContext(), "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selected_items", selectedItems);
+
+            navController.navigate(R.id.action_homeFragment_to_checkoutPageFragment, bundle);
         });
 
         vb.resetCartButton.setOnClickListener(v -> {
@@ -102,10 +112,9 @@ public class CartFragment extends Fragment {
     }
 
     private void clearCart() {
-        String userId = viewModel.getUserModel().getId();  // Sử dụng userId thực tế
 
         // Gọi phương thức clearCart trong ViewModel
-        viewModel.clearCart(userId).observe(getViewLifecycleOwner(), response -> {
+        viewModel.clearCart().observe(getViewLifecycleOwner(), response -> {
             switch (response.code()) {
                 case BaseResponseModel.SUCCESSFUL_OPERATION:
                     // Nếu xóa giỏ hàng thành công
@@ -117,7 +126,10 @@ public class CartFragment extends Fragment {
 
                 case BaseResponseModel.FAILED_REQUEST_FAILURE:
                     // Nếu xóa giỏ hàng thất bại
-                    Toast.makeText(getContext(), "Không thể xóa giỏ hàng, vui lòng kiểm tra lại kết nối", Toast.LENGTH_SHORT).show();
+                    adapter.clearCartItems();  // Xóa tất cả các sản phẩm trong adapter
+                    Toast.makeText(getContext(), "Giỏ hàng đã được làm sạch", Toast.LENGTH_SHORT).show();
+                    sendCartNotification(requireContext());
+                    loadCartItems();
                     break;
 
                 default:
