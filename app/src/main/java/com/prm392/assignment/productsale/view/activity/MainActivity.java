@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             user = UserAccountManager.getUser(this);
 
             justSignedIn = getIntent().getBooleanExtra(JUST_SIGNED_IN, false);
+            boolean navigateToHome = getIntent().getBooleanExtra("navigate_to_home", false);
 
             if (firstLaunch) {
                 startActivity(new Intent(this, AppIntro.class));
@@ -136,6 +137,21 @@ public class MainActivity extends AppCompatActivity {
                 loadUserData(user);
 //                if (!justSignedIn) syncUserData(); //From Server
 
+                // Navigate to home fragment if requested
+                if (navigateToHome) {
+                    new Handler().postDelayed(() -> {
+                        try {
+                            // Trigger the home menu selection programmatically
+                            vb.menuHome.performClick();
+                        } catch (Exception e) {
+                            // Fallback: try to navigate directly
+                            navController.popBackStack(0, true);
+                            navController.navigate(R.id.homeFragment);
+                            vb.menuHome.setChecked(true);
+                        }
+                    }, 1000); // Increased delay to ensure MainActivity is fully loaded
+                }
+
                 //Side Menu
                 underlayNavigationDrawer = new UnderlayNavigationDrawer(this, vb.menuFrontView, findViewById(R.id.main_FragmentContainer), vb.menuBackView, vb.menuButton);
                 vb.menu.setOnCheckedChangeListener((radioGroup, i) -> {
@@ -145,6 +161,14 @@ public class MainActivity extends AppCompatActivity {
                         navigateToFragment(R.id.homeFragment);
                     } else if (i == R.id.menu_profile) {
                         navigateToFragment(R.id.profileFragment);
+                    } else if (i == R.id.menu_orders) {
+                        navigateToFragment(R.id.ordersFragment);
+                    } else if (i == R.id.menu_pets) {
+                        navigateToFragment(R.id.underConstructionFragment2);
+                    } else if (i == R.id.menu_bookings) {
+                        navigateToFragment(R.id.underConstructionFragment2);
+                    } else if (i == R.id.menu_addresses) {
+                        navigateToFragment(R.id.underConstructionFragment2);
                     } else if (i == R.id.menu_signout) {
                         UserAccountManager.signOut(MainActivity.this, false);
                     } else {

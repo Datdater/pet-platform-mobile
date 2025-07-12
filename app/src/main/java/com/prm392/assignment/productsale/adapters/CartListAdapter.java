@@ -202,11 +202,10 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void removeCartItem(CartItemModel cartItem) {
-        String userId = viewModel.getUserModel().getId();
-        String productId = cartItem.getCartId(); // Lấy productId của item cần xóa
+        String cartId = cartItem.getCartId(); // Lấy productId của item cần xóa
 
         // Gọi phương thức removeCartItem từ ViewModel
-            viewModel.removeCartItem(productId).observe(lifecycleOwner, response -> {
+            viewModel.removeCartItem(cartId).observe(lifecycleOwner, response -> {
                 switch (response.code()) {
                     case BaseResponseModel.SUCCESSFUL_OPERATION:
                         // Nếu xóa thành công, xóa item khỏi RecyclerView

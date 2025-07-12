@@ -86,6 +86,78 @@
                 android:textSize="20sp" />
 
             <RadioButton
+                android:id="@+id/menu_orders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_orders"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/my_orders"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_pets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_pets"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/my_pets"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_bookings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_bookings"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/my_bookings"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_addresses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_addresses"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/my_addresses"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
                 android:id="@+id/menu_signout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -196,7 +268,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:scaleType="fitXY"
             app:layout_constraintStart_toStartOf="parent"

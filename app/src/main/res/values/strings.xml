@@ -276,5 +276,9 @@
     <string name="No_products_found" translatable="false">No Products Found</string>
     <string name="load_more">Load More</string>
     <string name="phone_number">Phone Number</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_pets">My Pets</string>
+    <string name="my_bookings">My Bookings</string>
+    <string name="my_addresses">My Addresses</string>
 
 </resources>

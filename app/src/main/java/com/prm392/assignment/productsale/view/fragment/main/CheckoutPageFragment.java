@@ -111,14 +111,17 @@ public class CheckoutPageFragment extends Fragment {
         }
 
         if (selectedItems != null && !selectedItems.isEmpty()) {
+            // Set selected items to ViewModel
+            viewModel.setSelectedItems(selectedItems);
+            
             adapter.addCartItems(selectedItems);
 
             double totalPrice = 0;
             for (CartItemModel item : selectedItems) {
-                totalPrice += item.getQuantity() * item.getPrice();
+                totalPrice += item.getQuantity() * item.getPrice() + 30000;
             }
 
-            vb.txtTotalAmount.setText(totalPrice + "$");
+            vb.txtTotalAmount.setText(String.format(Locale.US, "%.0f₫", totalPrice));
             setDefaultAddressModel();
 //            vb.lblUserAddress.setText(viewModel.getAddressModel().toString());
 //            vb.lblUsername.setText(viewModel.getAddressModel().getName());
@@ -144,9 +147,17 @@ public class CheckoutPageFragment extends Fragment {
 
         vb.cash.setChecked(true);
 
+        // Observe loading state
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null) {
+                vb.checkoutPageLoadingPage.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+                vb.buyNowBtn.setEnabled(!isLoading);
+            }
+        });
+
         vb.buyNowBtn.setOnClickListener((v) -> {
+            // Call buyNow method in ViewModel
             viewModel.buyNow(getActivity());
-            navController.navigate(R.id.action_checkoutPageFragment_to_paymentResultFragment);
         });
 
         vb.navBack.setOnClickListener((v) -> {

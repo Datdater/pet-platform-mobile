@@ -3,6 +3,7 @@ package com.prm392.assignment.productsale.model.cart;
 import com.google.gson.annotations.SerializedName;
 import com.prm392.assignment.productsale.model.products.ProductSaleModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CartItemModel {
+public class CartItemModel implements Serializable {
     @SerializedName(value = "cartItemId")
     private String cartItemId;
     private boolean selected;
