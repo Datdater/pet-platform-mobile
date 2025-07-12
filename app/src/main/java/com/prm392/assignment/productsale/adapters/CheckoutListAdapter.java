@@ -86,7 +86,7 @@ public class CheckoutListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             DataViewHolder holder  = (DataViewHolder) viewHolder;
 
             holder.productName.setText(data.get(position).getProductName());
-//            holder..setText((data.get(position).getStoreName()));
+            holder.productCategory.setText((data.get(position).getStoreName()));
             holder.productPrice.setText(String.format("%s %s", data.get(position).getPrice(), context.getString(R.string.currency)));
             holder.productQuantity.setText(String.valueOf(data.get(position).getQuantity()));
 //            holder.productImage.setImageURI(Uri.parse(data.get(position).getProduct().getProductImage()));

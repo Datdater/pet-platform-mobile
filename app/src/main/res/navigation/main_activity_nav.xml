@@ -35,6 +35,12 @@
         tools:layout="@layout/fragment_profile" />
 
     <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.prm392.assignment.productsale.view.fragment.main.OrdersFragment"
+        android:label="fragment_orders"
+        tools:layout="@layout/fragment_orders" />
+
+    <fragment
         android:id="@+id/productPageFragment"
         android:name="com.prm392.assignment.productsale.view.fragment.main.ProductPageFragment"
         android:label="fragment_product_page"

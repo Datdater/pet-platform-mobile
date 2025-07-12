@@ -280,5 +280,9 @@
     <string name="m_t_d_ch_v_s_hi_n_th_y">Mô tả dịch vụ sẽ hiển thị ở đây</string>
     <string name="_0_l_t_s_d_ng">0 lượt sử dụng</string>
     <string name="service_category">Danh mục dịch vụ</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_pets">My Pets</string>
+    <string name="my_bookings">My Bookings</string>
+    <string name="my_addresses">My Addresses</string>
 
 </resources>
