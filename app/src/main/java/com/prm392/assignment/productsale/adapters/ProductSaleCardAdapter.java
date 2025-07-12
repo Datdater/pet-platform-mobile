@@ -81,9 +81,6 @@ public class ProductSaleCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.name.setText(data.get(position).getProductName());
             holder.category.setText(data.get(position).getCategoryName());
             holder.price.setText(data.get(position).getCurrencyPrice());
-            holder.favourite.setChecked(false);
-
-            if (hideFavButton) holder.favourite.setVisibility(View.GONE);
 
             //Image
             Glide.with(context)
@@ -97,15 +94,6 @@ public class ProductSaleCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 public void onClick(View view) {
                     if (itemInteractionListener != null)
                         itemInteractionListener.onProductClicked(data.get(holder.getBindingAdapterPosition()).getProductId(), "");
-                }
-            });
-
-            holder.favourite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //data.get(holder.getAbsoluteAdapterPosition()).setFavorite(holder.favourite.isChecked());
-                    if (itemInteractionListener != null)
-                        itemInteractionListener.onProductAddedToFav(data.get(holder.getBindingAdapterPosition()).getProductId(), holder.favourite.isChecked());
                 }
             });
 
@@ -150,7 +138,6 @@ public class ProductSaleCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public static class DataViewHolder extends RecyclerView.ViewHolder {
         TextView category, name, price;
         ImageView image;
-        CheckBox favourite;
 
         public DataViewHolder(View view) {
             super(view);
@@ -158,7 +145,6 @@ public class ProductSaleCardAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             name = view.findViewById(R.id.product_sale_card_Name);
             price = view.findViewById(R.id.product_sale_card_price);
             image = view.findViewById(R.id.product_sale_card_image);
-            favourite = view.findViewById(R.id.product_sale_card_favourite);
         }
     }
 

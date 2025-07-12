@@ -46,8 +46,6 @@ public class ProductsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private ItemInteractionListener itemInteractionListener;
 
     @Setter
-    private boolean hideFavButton = false;
-    @Setter
     private boolean showDate = false;
 
     public interface LastItemReachedListener {
@@ -71,7 +69,6 @@ public class ProductsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         TextView brand, name, price, rate, date, sale;
         ImageView image, store;
-        CheckBox favourite;
         ImageView rateIcon;
 
         public DataViewHolder(View view) {
@@ -83,7 +80,6 @@ public class ProductsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             rate = view.findViewById(R.id.product_list_item_rate);
             image = view.findViewById(R.id.product_list_item_image);
             store = view.findViewById(R.id.product_list_item_store);
-            favourite = view.findViewById(R.id.product_list_item_favourite);
             rateIcon = view.findViewById(R.id.product_list_item_rate_icon);
             date = view.findViewById(R.id.product_list_item_date);
             sale = view.findViewById(R.id.product_list_item_salePercent);
@@ -126,11 +122,9 @@ public class ProductsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.brand.setText(Data.get(position).getBrand());
             holder.price.setText(Data.get(position).getPrice() + context.getString(R.string.currency));
             holder.rate.setText(String.valueOf(Data.get(position).getRate()));
-            holder.favourite.setChecked(Data.get(position).isFavorite());
             holder.date.setText(dateTimeConvert(Data.get(position).getDate()));
             holder.sale.setText(Data.get(position).getSalePercent() + context.getString(R.string.sale_percent));
 
-            if (hideFavButton) holder.favourite.setVisibility(View.GONE);
             if (Data.get(position).getSalePercent() == 0) holder.sale.setVisibility(View.GONE);
             if (Data.get(position).getBrand() == null) holder.brand.setVisibility(View.INVISIBLE);
 
@@ -164,15 +158,6 @@ public class ProductsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void onClick(View view) {
                     if (itemInteractionListener != null)
                         itemInteractionListener.onProductClicked(Data.get(holder.getAdapterPosition()));
-                }
-            });
-
-            holder.favourite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Data.get(holder.getAdapterPosition()).setFavorite(holder.favourite.isChecked());
-                    if (itemInteractionListener != null)
-                        itemInteractionListener.onProductAddedToFav(Data.get(holder.getAdapterPosition()).getId(), holder.favourite.isChecked());
                 }
             });
 

@@ -125,6 +125,20 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        serviceCardAdapter.setItemInteractionListener(new ServiceCardAdapter.ItemInteractionListener() {
+            @Override
+            public void onServiceClicked(String serviceId) {
+                Bundle bundle = new Bundle();
+                bundle.putString("serviceId", serviceId);
+                navController.navigate(R.id.action_homeFragment_to_servicePageFragment, bundle);
+            }
+
+            @Override
+            public void onLoadMoreClicked() {
+                // Xử lý load more nếu cần
+            }
+        });
+
         loadProducts(true);
         loadServices();
 

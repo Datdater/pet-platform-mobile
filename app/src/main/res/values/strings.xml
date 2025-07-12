@@ -276,5 +276,9 @@
     <string name="No_products_found" translatable="false">No Products Found</string>
     <string name="load_more">Load More</string>
     <string name="phone_number">Phone Number</string>
+    <string name="c_c_lo_i_ph_ng_d_ch_v_cho_th_c_ng"><![CDATA[Các loại phòng & dịch vụ cho thú cưng]]></string>
+    <string name="m_t_d_ch_v_s_hi_n_th_y">Mô tả dịch vụ sẽ hiển thị ở đây</string>
+    <string name="_0_l_t_s_d_ng">0 lượt sử dụng</string>
+    <string name="service_category">Danh mục dịch vụ</string>
 
 </resources>

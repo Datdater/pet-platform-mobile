@@ -9,12 +9,14 @@ import com.prm392.assignment.productsale.model.cart.UpdateCartModel;
 import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductVariantModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
+import com.prm392.assignment.productsale.model.services.ServiceDetailResponseModel;
 import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.Response;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -49,6 +51,10 @@ public interface ProductSaleService {
     @Headers({"client: mobile"})
     @GET("products/{id}")
     Observable<Response<ProductSalePageResponseModel>> getProductSale(@Header("Authorization") String token, @Path("id") String productId);
+
+    @Headers({"client: mobile"})
+    @GET("services/{id}")
+    Call<ServiceDetailResponseModel> getService(@Header("Authorization") String token, @Path("id") String serviceId);
 
     @Headers({"client: mobile"})
     @POST("cart/items")

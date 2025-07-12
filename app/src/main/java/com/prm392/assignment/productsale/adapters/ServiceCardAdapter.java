@@ -33,8 +33,7 @@ public class ServiceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private boolean hasMore = false; // Flag to show/hide the "Load More" button
     //    private final boolean noResultsFound = false;
     @Setter
-    private boolean hideFavButton = false;
-    private ServiceCardAdapter.ItemInteractionListener itemInteractionListener;
+    private ItemInteractionListener itemInteractionListener;
 
 
     public ServiceCardAdapter(Context context, RecyclerView recyclerView) {
@@ -72,9 +71,7 @@ public class ServiceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.name.setText(data.get(position).getName());
             holder.category.setText(data.get(position).getCategoryName());
             holder.price.setText(data.get(position).getPrice() + "");
-            holder.favourite.setChecked(false);
 
-            if (hideFavButton) holder.favourite.setVisibility(View.GONE);
 
             //Image
             Glide.with(context)
@@ -83,21 +80,9 @@ public class ServiceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     .transition(DrawableTransitionOptions.withCrossFade(250))
                     .into(holder.image);
 
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (itemInteractionListener != null)
-                        itemInteractionListener.onServiceClicked(data.get(holder.getBindingAdapterPosition()).getId(), "");
-                }
-            });
-
-            holder.favourite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //data.get(holder.getAbsoluteAdapterPosition()).setFavorite(holder.favourite.isChecked());
-                    if (itemInteractionListener != null)
-                        itemInteractionListener.onServiceAddedToFav(data.get(holder.getBindingAdapterPosition()).getId(), holder.favourite.isChecked());
-                }
+            holder.itemView.setOnClickListener(view -> {
+                if (itemInteractionListener != null)
+                    itemInteractionListener.onServiceClicked(data.get(holder.getBindingAdapterPosition()).getId());
             });
 
         } else if (viewHolder instanceof ServiceCardAdapter.FooterViewHolder) {
@@ -120,10 +105,7 @@ public class ServiceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 
     public interface ItemInteractionListener {
-        void onServiceClicked(String productId, String storeType);
-
-        void onServiceAddedToFav(String productId, boolean favChecked);
-
+        void onServiceClicked(String serviceId);
         void onLoadMoreClicked();
     }
 
@@ -144,7 +126,6 @@ public class ServiceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static class DataViewHolder extends RecyclerView.ViewHolder {
         TextView category, name, price;
         ImageView image;
-        CheckBox favourite;
 
         public DataViewHolder(View view) {
             super(view);
@@ -152,7 +133,6 @@ public class ServiceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             name = view.findViewById(R.id.product_sale_card_Name);
             price = view.findViewById(R.id.product_sale_card_price);
             image = view.findViewById(R.id.product_sale_card_image);
-            favourite = view.findViewById(R.id.product_sale_card_favourite);
         }
     }
 
