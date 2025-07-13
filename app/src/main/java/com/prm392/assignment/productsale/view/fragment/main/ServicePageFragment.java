@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +21,7 @@ import com.prm392.assignment.productsale.databinding.FragmentServicePageBinding;
 import com.prm392.assignment.productsale.model.services.ServiceDetailResponseModel;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.ServicePageViewModel;
 import android.util.Log;
+import java.util.ArrayList;
 
 public class ServicePageFragment extends Fragment {
     private FragmentServicePageBinding binding;
@@ -75,6 +77,41 @@ public class ServicePageFragment extends Fragment {
             binding.serviceStepRecyclerView.setAdapter(stepAdapter);
         });
         binding.servicePageBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        
+        // Setup booking button click listener
+        binding.serviceBookAppointmentButton.setOnClickListener(v -> {
+            // Lấy dữ liệu service detail hiện tại từ ViewModel
+            ServiceDetailResponseModel currentDetail = viewModel.getServiceDetail().getValue();
+            if (currentDetail != null && currentDetail.getPetServiceDetails() != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString("serviceId", serviceId);
+                bundle.putString("serviceName", currentDetail.getName());
+                bundle.putString("serviceCategory", currentDetail.getServiceCategoryName());
+                bundle.putInt("basePrice", currentDetail.getBasePrice());
+                bundle.putString("storeLocation", currentDetail.getStoreCity() + ", " + currentDetail.getStoreDistrict());
+                bundle.putString("estimatedTime", currentDetail.getEstimatedTime());
+                bundle.putString("description", currentDetail.getDescription());
+                
+                // Truyền danh sách service details
+                ArrayList<String> serviceDetailNames = new ArrayList<>();
+                ArrayList<String> serviceDetailIds = new ArrayList<>();
+                ArrayList<Integer> serviceDetailPrices = new ArrayList<>();
+                
+                for (ServiceDetailResponseModel.PetServiceDetail detail : currentDetail.getPetServiceDetails()) {
+                    serviceDetailNames.add(detail.getName());
+                    serviceDetailIds.add(detail.getId());
+                    serviceDetailPrices.add(detail.getAmount());
+                }
+                
+                bundle.putStringArrayList("serviceDetailNames", serviceDetailNames);
+                bundle.putStringArrayList("serviceDetailIds", serviceDetailIds);
+                bundle.putIntegerArrayList("serviceDetailPrices", serviceDetailPrices);
+                
+                Navigation.findNavController(v).navigate(R.id.action_servicePageFragment_to_bookingFragment, bundle);
+            } else {
+                Toast.makeText(requireContext(), "Không thể tải thông tin dịch vụ", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

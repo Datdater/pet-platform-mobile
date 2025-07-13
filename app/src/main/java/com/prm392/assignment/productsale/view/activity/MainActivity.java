@@ -164,9 +164,9 @@ public class MainActivity extends AppCompatActivity {
                     } else if (i == R.id.menu_orders) {
                         navigateToFragment(R.id.ordersFragment);
                     } else if (i == R.id.menu_pets) {
-                        navigateToFragment(R.id.underConstructionFragment2);
+                        navigateToFragment(R.id.petsFragment);
                     } else if (i == R.id.menu_bookings) {
-                        navigateToFragment(R.id.underConstructionFragment2);
+                        navigateToFragment(R.id.bookingsFragment);
                     } else if (i == R.id.menu_addresses) {
                         navigateToFragment(R.id.underConstructionFragment2);
                     } else if (i == R.id.menu_signout) {

@@ -284,5 +284,18 @@
     <string name="my_pets">My Pets</string>
     <string name="my_bookings">My Bookings</string>
     <string name="my_addresses">My Addresses</string>
+    <string name="trang_ch">Trang chủ</string>
+    <string name="t_i_kho_n">Tài khoản</string>
+    <string name="ql_n_h_ng">QL Đơn hàng</string>
+    <string name="ql_th_c_ng">QL Thú cưng</string>
+    <string name="ql_t_l_ch">QL Đặt lịch</string>
+    <string name="ng_xu_t">Đăng xuất</string>
+    <string name="ql_a_ch">QL Địa chỉ</string>
+    <string name="th_c_ng_d_ch_v"><![CDATA[Thú cưng & Dịch vụ:]]></string>
+    <string name="t_ng_ti_n">Tổng tiền:</string>
+    <string-array name="pet_type_array">
+        <item>Chó</item>
+        <item>Mèo</item>
+    </string-array>
 
 </resources>

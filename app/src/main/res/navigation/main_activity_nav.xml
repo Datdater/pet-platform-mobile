@@ -90,5 +90,49 @@
         android:id="@+id/servicePageFragment"
         android:name="com.prm392.assignment.productsale.view.fragment.main.ServicePageFragment"
         android:label="fragment_service_page"
-        tools:layout="@layout/fragment_service_page" />
+        tools:layout="@layout/fragment_service_page">
+        <action
+            android:id="@+id/action_servicePageFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment"
+            app:enterAnim="@anim/slide_from_right"
+            app:exitAnim="@anim/slide_to_left"
+            app:popEnterAnim="@anim/slide_from_left"
+            app:popExitAnim="@anim/slide_to_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookingFragment"
+        android:name="com.prm392.assignment.productsale.view.fragment.main.BookingFragment"
+        android:label="fragment_booking"
+        tools:layout="@layout/fragment_booking" />
+
+    <fragment
+        android:id="@+id/bookingsFragment"
+        android:name="com.prm392.assignment.productsale.view.fragment.main.BookingsFragment"
+        android:label="fragment_bookings"
+        tools:layout="@layout/fragment_bookings" />
+
+    <fragment
+        android:id="@+id/petsFragment"
+        android:name="com.prm392.assignment.productsale.view.fragment.main.PetsFragment"
+        android:label="fragment_pets"
+        tools:layout="@layout/fragment_pets" />
+
+    <!-- Thêm action ví dụ: từ homeFragment sang bookingsFragment -->
+    <action
+        android:id="@+id/action_homeFragment_to_bookingsFragment"
+        app:destination="@id/bookingsFragment"
+        app:enterAnim="@anim/slide_from_right"
+        app:exitAnim="@anim/slide_to_left"
+        app:popEnterAnim="@anim/slide_from_left"
+        app:popExitAnim="@anim/slide_to_right" />
+
+    <!-- Action từ homeFragment sang petsFragment -->
+    <action
+        android:id="@+id/action_homeFragment_to_petsFragment"
+        app:destination="@id/petsFragment"
+        app:enterAnim="@anim/slide_from_right"
+        app:exitAnim="@anim/slide_to_left"
+        app:popEnterAnim="@anim/slide_from_left"
+        app:popExitAnim="@anim/slide_to_right" />
 </navigation>

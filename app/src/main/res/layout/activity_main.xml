@@ -63,7 +63,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/home"
+                android:text="@string/trang_ch"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -81,7 +81,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/profile"
+                android:text="@string/t_i_kho_n"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -99,7 +99,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/my_orders"
+                android:text="@string/ql_n_h_ng"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -117,7 +117,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/my_pets"
+                android:text="@string/ql_th_c_ng"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -135,7 +135,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/my_bookings"
+                android:text="@string/ql_t_l_ch"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -153,7 +153,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/my_addresses"
+                android:text="@string/ql_a_ch"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -172,7 +172,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/sign_out"
+                android:text="@string/ng_xu_t"
                 android:textColor="@color/accent"
                 android:textSize="20sp" />
         </RadioGroup>
