@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     } else if (i == R.id.menu_bookings) {
                         navigateToFragment(R.id.underConstructionFragment2);
                     } else if (i == R.id.menu_addresses) {
-                        navigateToFragment(R.id.underConstructionFragment2);
+                        navigateToFragment(R.id.addressFragment);
                     } else if (i == R.id.menu_signout) {
                         UserAccountManager.signOut(MainActivity.this, false);
                     } else {

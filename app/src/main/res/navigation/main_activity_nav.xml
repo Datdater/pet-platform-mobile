@@ -37,6 +37,12 @@
         tools:layout="@layout/fragment_orders" />
 
     <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.prm392.assignment.productsale.view.fragment.main.AddressFragment"
+        android:label="fragment_address"
+        tools:layout="@layout/fragment_address" />
+
+    <fragment
         android:id="@+id/productPageFragment"
         android:name="com.prm392.assignment.productsale.view.fragment.main.ProductPageFragment"
         android:label="fragment_product_page"

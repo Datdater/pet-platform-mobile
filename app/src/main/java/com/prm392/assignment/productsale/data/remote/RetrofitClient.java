@@ -23,4 +23,12 @@ public class RetrofitClient {
         return mainClient;
     }
 
+    public static Retrofit createInstance(String baseUrl) {
+        return new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .build();
+    }
+
 }
