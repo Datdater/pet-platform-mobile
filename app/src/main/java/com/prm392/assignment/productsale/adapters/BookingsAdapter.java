@@ -123,6 +123,7 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.Bookin
         }
     }
     private String formatPrice(int price) {
+        // Format with thousands separator and append the currency symbol
         return String.format(Locale.US, "%,d₫", price);
     }
 } 

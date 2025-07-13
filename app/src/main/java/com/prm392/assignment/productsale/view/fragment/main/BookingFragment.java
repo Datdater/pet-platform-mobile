@@ -72,8 +72,6 @@ public class BookingFragment extends Fragment {
 
     private PetModel selectedPetModel;
 
-    private static final int REQUEST_NOTIFICATION_PERMISSION = 1002;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -370,13 +368,8 @@ public class BookingFragment extends Fragment {
         });
 
         confirmBookingButton.setOnClickListener(v -> {
-            if (!hasNotificationPermission()) {
-                showNotificationPermissionDialog();
-                return;
-            }
             if (validateInputs()) {
                 confirmBooking();
-                Navigation.findNavController(v).navigateUp();
             }
         });
     }
@@ -439,10 +432,8 @@ public class BookingFragment extends Fragment {
 
             viewModel.createBooking(token, request).observe(getViewLifecycleOwner(), bookingId -> {
                 if (bookingId != null && !bookingId.isEmpty()) {
-                    sendBookingNotification(requireContext());
-                    new android.os.Handler().postDelayed(() -> {
-                        Navigation.findNavController(requireView()).navigateUp();
-                    }, 1000);
+                    Navigation.findNavController(requireView()).navigate(R.id.bookingsFragment);
+                    ((com.prm392.assignment.productsale.view.activity.MainActivity) requireActivity()).setTitle("QL Đặt lịch");
                 } else {
                     Toast.makeText(requireContext(), "Đặt lịch thất bại!", Toast.LENGTH_SHORT).show();
                 }
@@ -470,57 +461,6 @@ public class BookingFragment extends Fragment {
         }
         Log.w("BookingFragment", "Chưa chọn thú cưng!");
         return null;
-    }
-
-    private void sendBookingNotification(Context context) {
-        String channelId = "booking_notifications";
-        String channelName = "Booking Notifications";
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
-            NotificationManager manager = context.getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
-            }
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_cart) // Đổi icon nếu có icon booking riêng
-                .setContentTitle("Đặt lịch thành công")
-                .setContentText("Vui lòng vào phần My Booking để xem lại đơn.")
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(2001, builder.build());
-    }
-
-    private boolean hasNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
-                    == android.content.pm.PackageManager.PERMISSION_GRANTED;
-        }
-        return true;
-    }
-
-    private void showNotificationPermissionDialog() {
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Bật thông báo")
-                .setMessage("Bạn cần bật quyền thông báo để nhận thông báo khi đặt lịch thành công. Bạn có muốn bật không?")
-                .setPositiveButton("Bật", (dialog, which) -> {
-                    requestNotificationPermission();
-                })
-                .setNegativeButton("Không", null)
-                .show();
-    }
-
-    private void requestNotificationPermission() {
-        ActivityCompat.requestPermissions(requireActivity(),
-                new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
     }
 
     // Nếu muốn xử lý kết quả trả về, override onRequestPermissionsResult trong Fragment
