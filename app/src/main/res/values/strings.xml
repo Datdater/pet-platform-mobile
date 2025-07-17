@@ -276,5 +276,6 @@
     <string name="No_products_found" translatable="false">No Products Found</string>
     <string name="load_more">Load More</string>
     <string name="phone_number">Phone Number</string>
-
+    <!-- Missing strings for Sign Up -->
+    <string name="Name_too_short">Name must be at least 2 characters</string>
 </resources>

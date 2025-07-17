@@ -44,6 +44,15 @@ public class SharedPrefManager {
                 .putBoolean(FIRST_LAUNCH,value)
                 .apply();
     }
+    public void setJustRegistered(boolean justRegistered) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("just_registered", justRegistered);
+        editor.apply();
+    }
+
+    public boolean isJustRegistered() {
+        return sharedPreferences.getBoolean("just_registered", false);
+    }
 
     public boolean isRememberMeChecked() {
         return sharedPreferences.getBoolean(REMEMBER_ME,true);

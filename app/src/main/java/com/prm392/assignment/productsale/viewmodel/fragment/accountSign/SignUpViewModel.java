@@ -17,16 +17,16 @@ public class SignUpViewModel extends ViewModel {
         authRepository = new AuthRepository();
     }
 
-    public LiveData<Response<UserResponseModel>> signUp(String username, String email, String password, String phoneNumber, String address) {
+    public LiveData<Response<UserResponseModel>> signUp(String name, String email, String password, String phoneNumber) {
         SignUpModel signUpModel = new SignUpModel();
-        signUpModel.setUsername(username);
+        signUpModel.setName(name);
         signUpModel.setEmail(email);
         signUpModel.setPassword(password);
         signUpModel.setPhoneNumber(phoneNumber);
-        if (address != null && address.isEmpty()) address = null;
-        signUpModel.setAddress(address);
 
         return authRepository.signUp(signUpModel);
     }
-
+    public LiveData<Response<Void>> sendEmailConfirmation(String email) {
+        return authRepository.sendEmailConfirmation(email);
+    }
 }

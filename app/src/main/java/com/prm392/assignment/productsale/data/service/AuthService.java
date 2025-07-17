@@ -9,6 +9,7 @@ import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface AuthService {
     @Headers({"client: mobile"})
@@ -18,4 +19,8 @@ public interface AuthService {
     @Headers({"client: mobile"})
     @POST("Auth/register")
     Observable<Response<UserResponseModel>> signUp(@Body SignUpModel signUpModel);
+
+    @Headers({"client: mobile"})
+    @POST("Auth/email")
+    Observable<Response<Void>> sendEmailConfirmation(@Query("email") String email);
 }
