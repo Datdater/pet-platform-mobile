@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 public class SignUpModel {
 
-    @SerializedName("username")
-    private String username;
+    @SerializedName("name")
+    private String name;
 
     @SerializedName("email")
     private String email;
@@ -21,6 +21,15 @@ public class SignUpModel {
     @SerializedName("phoneNumber")
     private String phoneNumber;
 
-    @SerializedName("address")
-    private String address;
+    @Override
+    public String toString() {
+        return "SignUpModel{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='[HIDDEN]'" +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
+
+
 }

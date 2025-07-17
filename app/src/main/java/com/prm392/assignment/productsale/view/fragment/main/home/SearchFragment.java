@@ -18,10 +18,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.adapters.ProductSaleCardAdapter;
+import com.prm392.assignment.productsale.adapters.ServiceCardAdapter;
 import com.prm392.assignment.productsale.databinding.FragmentSearchBinding;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductSaleModel;
 import com.prm392.assignment.productsale.model.products.ProductSortAndFilterModel;
+import com.prm392.assignment.productsale.model.services.ServiceModel;
+import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 import com.prm392.assignment.productsale.util.DialogsProvider;
 import com.prm392.assignment.productsale.view.activity.MainActivity;
 import com.prm392.assignment.productsale.view.fragment.dialogs.ProductSortAndFilterDialog;
@@ -34,6 +37,7 @@ public class SearchFragment extends Fragment {
     private NavController navController;
     private SearchViewModel viewModel;
     private ProductSaleCardAdapter adapter;
+    private ServiceCardAdapter serviceCardAdapter;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -75,9 +79,15 @@ public class SearchFragment extends Fragment {
         });
 
         adapter = new ProductSaleCardAdapter(getContext(), vb.searchProductsRecyclerView);
+        serviceCardAdapter = new ServiceCardAdapter(getContext(), vb.serviceRecyclerView);
+
         GridLayoutManager gridLayoutManager = getGridLayoutManager();
         vb.searchProductsRecyclerView.setLayoutManager(gridLayoutManager);
         vb.searchProductsRecyclerView.setAdapter(adapter);
+
+        vb.serviceRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        vb.serviceRecyclerView.setAdapter(serviceCardAdapter);
+
         adapter.setHideFavButton(true);
 
         vb.filterButton.setOnClickListener(button -> {
@@ -87,6 +97,7 @@ public class SearchFragment extends Fragment {
                     public void onApply(ProductSortAndFilterModel sortAndFilterModel) {
                         viewModel.setProductSortAndFilterModel(sortAndFilterModel);
                         loadProducts(true);
+                        loadServices();
                     }
                 });
             });
@@ -94,14 +105,14 @@ public class SearchFragment extends Fragment {
 
         adapter.setItemInteractionListener(new ProductSaleCardAdapter.ItemInteractionListener() {
             @Override
-            public void onProductClicked(long productId, String storeType) {
+            public void onProductClicked(String productId, String storeType) {
                 Bundle bundle = new Bundle();
-                bundle.putLong("productId", productId);
+                bundle.putString("productId", productId);
                 navController.navigate(R.id.action_homeFragment_to_productPageFragment, bundle);
             }
 
             @Override
-            public void onProductAddedToFav(long productId, boolean favChecked) {
+            public void onProductAddedToFav(String productId, boolean favChecked) {
 //                setFavourite(productId, favChecked);
             }
 
@@ -110,10 +121,13 @@ public class SearchFragment extends Fragment {
                 ProductSortAndFilterModel model = viewModel.getProductSortAndFilterModel();
                 model.setPageIndex(model.getPageIndex() + 1);
                 loadProducts(false);
+                loadServices();
             }
         });
 
         loadProducts(true);
+        loadServices();
+
 
     }
 
@@ -154,6 +168,31 @@ public class SearchFragment extends Fragment {
                         ArrayList<ProductSaleModel> products = response.body().getProducts();
                         adapter.addProducts(products);
                         adapter.setHasMore(response.body().isNext());
+                    }
+                    break;
+                case BaseResponseModel.FAILED_REQUEST_FAILURE:
+                    Toast.makeText(getContext(), "Loading Products Failed", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    DialogsProvider.get(getActivity()).messageDialog(getString(R.string.Server_Error), getString(R.string.Code) + response.code());
+            }
+        });
+    }
+
+    void loadServices() {
+        viewModel.getServices().observe(getViewLifecycleOwner(), response -> {
+            switch (response.code()) {
+                case BaseResponseModel.SUCCESSFUL_OPERATION:
+                    vb.searchLoading.setVisibility(View.GONE);
+                    if (response.body().getServices() == null || response.body().getServices().isEmpty()) {
+                        vb.noResultsView.setVisibility(View.VISIBLE);
+                        serviceCardAdapter.setHasMore(false);
+                        return;
+                    } else {
+                        vb.noResultsView.setVisibility(View.GONE);
+                        ArrayList<ServiceModel> products = response.body().getServices();
+                        serviceCardAdapter.addServices(products);
+                        serviceCardAdapter.setHasMore(response.body().isNext());
                     }
                     break;
                 case BaseResponseModel.FAILED_REQUEST_FAILURE:

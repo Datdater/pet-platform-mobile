@@ -6,6 +6,7 @@ import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.model.cart.CartTotalResponse;
 import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductsSaleResponseModel;
+import com.prm392.assignment.productsale.model.services.ServiceResponseModel;
 
 import java.util.List;
 
@@ -29,9 +30,9 @@ public interface ProductSaleService {
 //    Observable<Response<ProductsSaleResponseModel>> getDemoProducts(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
-    @GET("product")
+    @GET("products")
     Observable<Response<ProductsSaleResponseModel>> getProducts(@Header("Authorization") String token,
-                                                                @Query("pageIndex") Integer pageIndex,
+                                                                @Query("pageNumber") Integer pageIndex,
                                                                 @Query("pageSize") Integer pageSize,
                                                                 @Query("search") String search,
                                                                 @Query("sortBy") String sortBy,
@@ -39,12 +40,12 @@ public interface ProductSaleService {
                                                                 @Query("minPrice") Double minPrice,
                                                                 @Query("maxPrice") Double maxPrice,
                                                                 @Query("categoryIds") List<Integer> categoryIds);
-    @GET("product/demo")
-    Observable<Response<ProductsSaleResponseModel>> getDemoProducts(@Header("Authorization") String token);
+    @GET("services")
+    Observable<Response<ServiceResponseModel>> getServices(@Header("Authorization") String token);
 
     @Headers({"client: mobile"})
-    @GET("product/{productId}")
-    Observable<Response<ProductSalePageResponseModel>> getProductSale(@Header("Authorization") String token, @Path("productId") long productId);
+    @GET("products/{id}")
+    Observable<Response<ProductSalePageResponseModel>> getProductSale(@Header("Authorization") String token, @Path("id") String productId);
 
     @Headers({"client: mobile"})
     @POST("cart")

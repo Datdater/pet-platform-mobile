@@ -1,7 +1,8 @@
-package com.prm392.assignment.productsale.model.products;
+package com.prm392.assignment.productsale.model.services;
 
 import com.google.gson.annotations.SerializedName;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
+import com.prm392.assignment.productsale.model.products.ProductSaleModel;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ProductsSaleResponseModel extends BaseResponseModel {
+public class ServiceResponseModel extends BaseResponseModel {
 
     @SerializedName("totalCount")
     private int totalItemsCount;
@@ -28,6 +29,5 @@ public class ProductsSaleResponseModel extends BaseResponseModel {
     private boolean previous;
 
     @SerializedName("items")
-    private ArrayList<ProductSaleModel> products;
-
+    private ArrayList<ServiceModel> services;
 }

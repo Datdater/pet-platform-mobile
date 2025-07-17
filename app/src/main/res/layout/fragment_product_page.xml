@@ -117,8 +117,6 @@
 
                 </androidx.appcompat.widget.Toolbar>
 
-
-
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -144,6 +142,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/product_page_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="0000LE"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
 
                     <LinearLayout
                         android:id="@+id/product_sale_select_quantity"
@@ -179,7 +193,7 @@
                             android:layout_weight="5"
                             android:background="@drawable/clickable_text"
                             android:inputType="number"
-                            android:text="13"
+                            android:text="1"
                             android:textAlignment="center"
                             android:textSize="20sp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -201,21 +215,69 @@
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/product_page_price"
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Add rating and reviews section -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/product_rating_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/rating_star_layout"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="0000LE"
-                        android:textColor="?attr/colorPrimary"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="1.0" />
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:id="@+id/product_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4.5"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorAccent" />
+
+                        <TextView
+                            android:id="@+id/star_symbol"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="★"
+                            android:textSize="18sp"
+                            android:textColor="?attr/colorAccent"
+                            android:layout_marginStart="4dp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/review_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(0 reviews)"
+                        android:textSize="14sp"
+                        android:textColor="?attr/textFillColor"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintStart_toEndOf="@+id/rating_star_layout"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <TextView
+                        android:id="@+id/sold_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 sold"
+                        android:textSize="14sp"
+                        android:textColor="?attr/textFillColor"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toEndOf="@+id/review_count"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -249,6 +311,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <TextView
                     android:id="@+id/product_page_description"
                     android:layout_width="match_parent"
@@ -258,9 +321,10 @@
                     android:fontFamily="@font/raleway_light"
                     android:gravity="start"
                     android:includeFontPadding="false"
-                    android:text="text test preview of store description text test preview of store description text test preview of store description text test preview of store description"
+                    android:text="Product description will be shown here"
                     android:textColor="?attr/textFillColor"
                     android:textSize="20sp"/>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/product_sale_tech_specs"
                     android:layout_width="match_parent"
@@ -289,14 +353,13 @@
                         android:fontFamily="@font/raleway_light"
                         android:gravity="start"
                         android:includeFontPadding="false"
-                        android:text="text test preview of store description text test preview of store description text test preview of store description text test preview of store description"
+                        android:text="Technical specifications will be shown here"
                         android:textColor="?attr/textFillColor"
                         android:textSize="20sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/txtSaleTechSpecsTitle" />
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -328,14 +391,13 @@
                         android:fontFamily="@font/raleway_light"
                         android:gravity="start"
                         android:includeFontPadding="false"
-                        android:text="text test preview of store description text test preview of store description text test preview of store description text test preview of store description"
+                        android:text="Full description will be shown here"
                         android:textColor="?attr/textFillColor"
                         android:textSize="20sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/txtFullDescTitle" />
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -370,8 +432,8 @@
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView18" />
 
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <android.widget.Button
                     android:id="@+id/product_page_navigate_button"
                     android:layout_width="match_parent"
@@ -391,6 +453,7 @@
                     android:layout_marginBottom="50dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

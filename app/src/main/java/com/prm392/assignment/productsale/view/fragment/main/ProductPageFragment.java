@@ -46,6 +46,7 @@ import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.databinding.FragmentProductPageBinding;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductSaleModel;
+import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.StoreLocation;
 import com.prm392.assignment.productsale.util.AppSettingsManager;
 import com.prm392.assignment.productsale.util.DialogsProvider;
@@ -54,6 +55,7 @@ import com.prm392.assignment.productsale.viewmodel.fragment.main.ProductPageView
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -115,7 +117,7 @@ public class ProductPageFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this, ViewModelProvider.Factory.from(ProductPageViewModel.initializer))
                 .get(ProductPageViewModel.class);
-        if (getArguments() != null) viewModel.setProductId(getArguments().getLong("productId"));
+        if (getArguments() != null) viewModel.setProductId(getArguments().getString("productId"));
 
         new Handler().post(() -> {
             navController = ((MainActivity) getActivity()).getAppNavController();
@@ -180,7 +182,9 @@ public class ProductPageFragment extends Fragment {
         });
 
         vb.productPageNavigateButton.setOnClickListener(button -> {
-            Uri uri = Uri.parse("google.navigation:q=" + viewModel.getStoreLocation().getLatitude() + "," + viewModel.getStoreLocation().getLongitude());
+//            String address = viewModel.getStoreLocation().getFullAddress(); // Ví dụ: "123 Lý Thường Kiệt, Quận 10, TP.HCM"
+            String address = "123 Lý Thường Kiệt, Quận 10, TP.HCM";
+            Uri uri = Uri.parse("google.navigation:q=" + Uri.encode(address));
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(uri);
             startActivity(intent);
@@ -234,8 +238,7 @@ public class ProductPageFragment extends Fragment {
             switch (response.code()) {
                 case BaseResponseModel.SUCCESSFUL_OPERATION:
                     if (response.body() != null) {
-                        viewModel.setProductSaleModel(response.body().getProduct());
-                        viewModel.setStoreLocation(response.body().getStoreLocation());
+                        viewModel.setProductSaleModel(response.body());
                         renderProductSaleData();
                         vb.productPageLoadingPage.setVisibility(View.GONE);
                         vb.getRoot().startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.lay_on));
@@ -256,75 +259,77 @@ public class ProductPageFragment extends Fragment {
     }
 
     void renderProductSaleData() {
-        ProductSaleModel productSaleModel = viewModel.getProductSaleModel();
-        StoreLocation storeLocation = viewModel.getStoreLocation();
+        ProductSalePageResponseModel productSaleModel = viewModel.getProductSaleModel();
+
+        // Set basic product information
         vb.productPageBrand.setText(productSaleModel.getCategoryName());
-        Double productPrice = Double.parseDouble(String.format("%.2f", productSaleModel.getPrice()));
-        vb.productPagePrice.setText(productPrice + "$");
+        vb.productPageTitle.setText(productSaleModel.getName());
+        vb.productPageDescription.setText(productSaleModel.getDescription());
+
+        // Set quantity
         vb.txtQuantity.setText(viewModel.getProductQuantity() + "");
 
-        Glide.with(this)
-                .load(Uri.parse(productSaleModel.getProductImage()))
-                .transition(DrawableTransitionOptions.withCrossFade(100))
-                .into(vb.productPageImage);
+        // Set price - use basePrice from new model
+        vb.productPagePrice.setText(String.format("%.0fLE", productSaleModel.getBasePrice()));
 
-        vb.productPageBrand.setText(productSaleModel.getCategoryName());
-        vb.productPageTitle.setText(productSaleModel.getProductName());
-        vb.productPageDescription.setText(productSaleModel.getBriefDescription());
-        vb.productSaleFullDescription.setText(productSaleModel.getFullDescription());
-        vb.productSaleTechSpecsText.setText(productSaleModel.getTechnicalSpecifications());
-        addProductOnMap(storeLocation.getLatitude(), storeLocation.getLongitude(), storeLocation.getAddress());
+        // Load main image
+        String mainImageUrl = getMainImageUrl(productSaleModel.getImages());
+        if (mainImageUrl != null && !mainImageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(mainImageUrl)
+                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                    .into(vb.productPageImage);
+        }
 
-        String fullDescription = productSaleModel.getFullDescription();
+        // Set store information
+        vb.textView18.setText("Store: " + productSaleModel.getStoreName());
 
-        if (fullDescription.length() > 120) {
-            String shortDescription = fullDescription.substring(0, 110) + "... ";
+        // Set technical specifications (using product dimensions and weight)
+        String techSpecs = buildTechSpecs(productSaleModel);
+        vb.productSaleTechSpecsText.setText(techSpecs);
 
-            SpannableString readMore = new SpannableString(getString(R.string.Read_More));
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(@NonNull View widget) {
+        // Set full description
+        vb.productSaleFullDescription.setText(productSaleModel.getDescription());
 
-                    vb.productSaleFullDescription.animate().alpha(0).setDuration(250).withEndAction(() -> {
-                        vb.productSaleFullDescription.setText(fullDescription);
-                        vb.productSaleFullDescription.animate().alpha(1f).setDuration(250).start();
-                    }).start();
+//         Update rating and reviews info if you have UI elements for them
+         vb.productRating.setText(String.valueOf(productSaleModel.getStarAverage()));
+         vb.reviewCount.setText(productSaleModel.getReviewCount() + " reviews");
 
-                }
-
-                @Override
-                public void updateDrawState(@NonNull TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                }
-            };
-
-            readMore.setSpan(clickableSpan, 0, readMore.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            vb.productSaleFullDescription.setText(shortDescription);
-            vb.productSaleFullDescription.append(readMore);
-            vb.productSaleFullDescription.setMovementMethod(LinkMovementMethod.getInstance());
-
-        } else vb.productSaleFullDescription.setText(fullDescription);
-
+//         Update sold count if you have UI element for it
+         vb.soldCount.setText(productSaleModel.getSold() + " sold");
     }
 
-    private void addProductOnMap(double lat, double lng, String storeName) {
-        try {
-            LatLng productLocation = new LatLng(lat, lng);
-            googleMap.addMarker(new MarkerOptions().position(productLocation)
-                    .title(storeName)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(productLocation)
-                    .zoom(googleMap.getCameraPosition().zoom < 8 ? 8 : googleMap.getCameraPosition().zoom)
-                    .build();
-
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Map Marker Error", Toast.LENGTH_SHORT).show();
+    private String getMainImageUrl(List<ProductSalePageResponseModel.Image> images) {
+        if (images == null || images.isEmpty()) {
+            return null;
         }
+
+        // Find main image first
+        for (ProductSalePageResponseModel.Image image : images) {
+            if (image.isMain()) {
+                return image.getImageUrl();
+            }
+        }
+
+        // If no main image, return first image
+        return images.get(0).getImageUrl();
+    }
+
+    private String buildTechSpecs(ProductSalePageResponseModel productSaleModel) {
+        StringBuilder specs = new StringBuilder();
+
+        specs.append("Dimensions: ")
+                .append(productSaleModel.getLength()).append("mm × ")
+                .append(productSaleModel.getWidth()).append("mm × ")
+                .append(productSaleModel.getHeight()).append("mm\n");
+
+        specs.append("Weight: ").append(productSaleModel.getWeight()).append("g\n");
+
+        if (productSaleModel.getVariants() != null && !productSaleModel.getVariants().isEmpty()) {
+            specs.append("Available Variants: ").append(productSaleModel.getVariants().size());
+        }
+
+        return specs.toString();
     }
 
     public String dateTimeConvert(String dateTime) {
