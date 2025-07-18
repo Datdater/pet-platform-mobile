@@ -31,10 +31,14 @@ import com.prm392.assignment.productsale.model.address.GetAllAddressResponseMode
 import com.prm392.assignment.productsale.model.cart.CartItemModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
 import com.prm392.assignment.productsale.model.orders.CreateOrderModel;
+import com.prm392.assignment.productsale.model.orders.CreateOrderResponseModel;
 import com.prm392.assignment.productsale.model.orders.OrderDetailModel;
+import com.prm392.assignment.productsale.model.orders.UpdatePaymentModel;
 import com.prm392.assignment.productsale.util.UserAccountManager;
 import com.prm392.assignment.productsale.view.activity.MainActivity;
 import com.prm392.assignment.productsale.view.activity.PaymentNotification;
+import com.vnpay.authentication.VNP_AuthenticationActivity;
+import com.vnpay.authentication.VNP_SdkCompletedCallback;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -116,7 +120,7 @@ public class CheckoutPageViewModel extends ViewModel {
             }
     );
 
-    public LiveData<Response<BaseResponseModel>> createOrder(CreateOrderModel orderModel) {
+    public LiveData<Response<CreateOrderResponseModel>> createOrder(CreateOrderModel orderModel) {
         return orderRepository.createOrder(token, orderModel);
     }
 
@@ -132,6 +136,7 @@ public class CheckoutPageViewModel extends ViewModel {
             String userId, String paymentMethod, String billingAddress) {
         return cartRepository.completePaymentAndConvertCartToOrder(token, userId, paymentMethod, billingAddress);
     }
+
     public LiveData<Response<GetAllAddressResponseModel>> getAddressCustomer() {
         return customerRepository.getCustomerAddress(token);
     }
@@ -141,7 +146,39 @@ public class CheckoutPageViewModel extends ViewModel {
         return cartLiveData;
     }
 
-    public void buyNow(Context context){
+    public void buyNow(Context context) {
+
+        // Intent intent = new Intent(context, VNP_AuthenticationActivity.class);
+        // intent.putExtra("url", "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=6500000&vnp_Command=pay&vnp_CreateDate=20250718022929&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+cho+don+hang%3A+2929117939&vnp_OrderType=250000&vnp_ReturnUrl=http%3A%2F%2Fsuccess.sdk.merchantbackapp%2F&vnp_TmnCode=1AUU6IIO&vnp_TxnRef=2929117939&vnp_Version=2.1.0&vnp_SecureHash=216c44b4da8215d7b77c2de42a06c412a029a2ed63897300b075d5b38a25edf8bd84653d0a5673ffc0e9309fbd6766e7ea9e80f68e3d2e6af7db99b4b471fe5f"); //bắt buộc, VNPAY cung cấp
+        // intent.putExtra("tmn_code", "FAHASA03"); //bắt buộc, VNPAY cung cấp
+        // intent.putExtra("scheme", "activitymain"); //bắt buộc, scheme để mở lại app khi có kết quả thanh toán từ mobile banking
+        // intent.putExtra("is_sandbox", true); //bắt buộc, true <=> môi trường test, true <=> môi trường live
+        // VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
+        //     @Override
+        //     public void sdkAction(String action) {
+        //         Log.wtf("SplashActivity", "action: " + action);
+        //         //action == AppBackAction
+        //         //Người dùng nhấn back từ sdk để quay lại
+
+        //         //action == CallMobileBankingApp
+        //         //Người dùng nhấn chọn thanh toán qua app thanh toán (Mobile Banking, Ví...)
+        //         //lúc này app tích hợp sẽ cần lưu lại cái PNR, khi nào người dùng mở lại app tích hợp thì sẽ gọi kiểm tra trạng thái thanh toán của PNR Đó xem đã thanh toán hay chưa.
+
+        //         //action == WebBackAction
+        //         //Người dùng nhấn back từ trang thanh toán thành công khi thanh toán qua thẻ khi url có chứa: cancel.sdk.merchantbackapp
+
+        //         //action == FaildBackAction
+        //         //giao dịch thanh toán bị failed
+
+        //         //action == SuccessBackAction
+        //         //thanh toán thành công trên webview
+        //         if (action.equalsIgnoreCase("SuccessBackAction")) {
+        //             removeOrderedItemsFromCart(context);
+        //         }
+        //     }
+        // });
+        // context.startActivity(intent);
+
         if (selectedItems == null || selectedItems.isEmpty()) {
             Toast.makeText(context, "No items selected for checkout", Toast.LENGTH_SHORT).show();
             return;
@@ -152,41 +189,96 @@ public class CheckoutPageViewModel extends ViewModel {
             return;
         }
 
-        // Create order details from selected items
-        List<OrderDetailModel> orderDetails = new ArrayList<>();
+        // Group items by store
+        java.util.LinkedHashMap<String, java.util.List<CartItemModel>> grouped = new java.util.LinkedHashMap<>();
         for (CartItemModel item : selectedItems) {
-            OrderDetailModel detail = new OrderDetailModel();
-            detail.setQuantity(item.getQuantity());
-            detail.setProductVariationId(item.getProductId());
-            orderDetails.add(detail);
+            grouped.computeIfAbsent(item.getStoreName(), k -> new java.util.ArrayList<>()).add(item);
         }
 
-        // Create order model
-        CreateOrderModel orderModel = new CreateOrderModel();
-        orderModel.setAddressId(addressModel.getId());
-        orderModel.setPaymentMethod(paymentMethod.equals("Cash") ? 0 : 1); // 1 for Cash, 2 for Credit Card
-        orderModel.setDeliveryPrice(30000); // Fixed shipping fee
-        orderModel.setPromotionId("11c246d0-0cb5-4be5-8d4a-4d78e887df19"); // No promotion for now
-        orderModel.setNote("Order placed from mobile app");
-        orderModel.setOrderDetails(orderDetails);
-
-        // Set loading state
         isLoading.postValue(true);
-        
-        // Call create order API
-        createOrder(orderModel).observeForever(response -> {
-            if (response != null && response.isSuccessful()) {
-                    isLoading.postValue(false);
-                    removeOrderedItemsFromCart(context);
+        final int[] storesProcessed = {0};
+        final int totalStores = grouped.size();
+        final boolean[] anyError = {false};
 
-            } else {
-                isLoading.postValue(false);
-                Toast.makeText(context, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, PaymentNotification.class);
-                intent.putExtra("result", "Network error");
-                context.startActivity(intent);
+        for (String store : grouped.keySet()) {
+            java.util.List<CartItemModel> storeItems = grouped.get(store);
+            java.util.List<OrderDetailModel> orderDetails = new java.util.ArrayList<>();
+            for (CartItemModel item : storeItems) {
+                OrderDetailModel detail = new OrderDetailModel();
+                detail.setQuantity(item.getQuantity());
+                detail.setProductVariationId(item.getProductId());
+                orderDetails.add(detail);
             }
-        });
+
+            CreateOrderModel orderModel = new CreateOrderModel();
+            orderModel.setAddressId(addressModel.getId());
+            orderModel.setPaymentMethod(paymentMethod.equals("Cash") ? 0 : 3); // 0 for Cash, 1 for Credit Card
+            orderModel.setDeliveryPrice(30000); // Fixed shipping fee
+            orderModel.setPromotionId("11c246d0-0cb5-4be5-8d4a-4d78e887df19"); // No promotion for now
+            orderModel.setNote("Order placed from mobile app");
+            orderModel.setOrderDetails(orderDetails);
+
+            createOrder(orderModel).observeForever(response -> {
+                if (response != null && response.isSuccessful()) {
+                    CreateOrderResponseModel body = response.body();
+
+                    if ( body!= null && orderModel.getPaymentMethod() == 3) { // 3 = credit cash
+                        try {
+                            String orderId = body.getId();
+                            String paymentUrl = body.getPaymentUrl();
+
+                            // Launch VNPAY SDK with paymentUrl
+                            Intent intent = new Intent(context, VNP_AuthenticationActivity.class);
+                            intent.putExtra("url", paymentUrl); // Use the paymentUrl from backend
+                            intent.putExtra("tmn_code", "FAHASA03"); // Your merchant code
+                            intent.putExtra("scheme", "activitymain"); // Your scheme
+                            intent.putExtra("is_sandbox", true); // true for sandbox, false for live
+
+                            VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
+                                @Override
+                                public void sdkAction(String action) {
+                                    Log.wtf("Checkout", "action: " + action);
+                                    if (action.equalsIgnoreCase("SuccessBackAction")) {
+                                        var updatePayment = new UpdatePaymentModel();
+                                        updatePayment.setOrderCode("123456");
+                                        updatePayment.setPaymentId(orderId);
+                                        updatePayment(updatePayment).observeForever(response -> {
+                                            if (response != null ) {
+                                                Toast.makeText(context, "Payment completed", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                        removeOrderedItemsFromCart(context);
+                                    }
+                                    // Handle other actions as needed
+                                }
+                            });
+
+                            context.startActivity(intent);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(context, "Payment URL error", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        storesProcessed[0]++;
+                        if (response == null || !response.isSuccessful()) {
+                            anyError[0] = true;
+                        }
+                        if (storesProcessed[0] == totalStores) {
+                            isLoading.postValue(false);
+                            if (anyError[0]) {
+                                Toast.makeText(context, "Some orders failed. Please check your orders.", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(context, PaymentNotification.class);
+                                intent.putExtra("result", "Some orders failed");
+                                context.startActivity(intent);
+                            } else {
+                                removeOrderedItemsFromCart(context);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void removeOrderedItemsFromCart(Context context) {
@@ -202,29 +294,31 @@ public class CheckoutPageViewModel extends ViewModel {
 
         // Option 1: Remove specific ordered items one by one
         removeNextItemFromCart(context, 0);
-        
+
     }
 
     private void removeNextItemFromCart(Context context, int index) {
         for (CartItemModel item : selectedItems) {
-            removeCartItem(item.getCartId()).observeForever(response -> {switch (response.code()) {
-                case BaseResponseModel.SUCCESSFUL_OPERATION:
-                    Toast.makeText(context, "Product removed from cart", Toast.LENGTH_SHORT).show();
-                    isLoading.postValue(false);
-                    Toast.makeText(context, "Order created successfully! Items removed from cart.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(context, PaymentNotification.class);
-                    intent.putExtra("result", "Order created successfully");
-                    context.startActivity(intent);
-                    break;
+            removeCartItem(item.getCartId()).observeForever(response -> {
+                switch (response.code()) {
+                    case BaseResponseModel.SUCCESSFUL_OPERATION:
+                        Toast.makeText(context, "Product removed from cart", Toast.LENGTH_SHORT).show();
+                        isLoading.postValue(false);
+                        Toast.makeText(context, "Order created successfully! Items removed from cart.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, PaymentNotification.class);
+                        intent.putExtra("result", "Order created successfully");
+                        context.startActivity(intent);
+                        break;
 
-                case BaseResponseModel.FAILED_REQUEST_FAILURE:
-                    Toast.makeText(context, "Error: Failed to remove item", Toast.LENGTH_SHORT).show();
-                    break;
+                    case BaseResponseModel.FAILED_REQUEST_FAILURE:
+                        Toast.makeText(context, "Error: Failed to remove item", Toast.LENGTH_SHORT).show();
+                        break;
 
-                default:
-                    Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    break;
-            }});
+                    default:
+                        Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            });
         }
 
 
@@ -247,10 +341,12 @@ public class CheckoutPageViewModel extends ViewModel {
         });
     }
 
-    public LiveData<Response<BaseResponseModel>> removeCartItem( String cartId) {
+    public LiveData<Response<BaseResponseModel>> removeCartItem(String cartId) {
         return cartRepository.removeItemFromCart(token, cartId);
     }
-
+    public LiveData<Response<BaseResponseModel>> updatePayment(UpdatePaymentModel model) {
+        return orderRepository.createPayment(token, model);
+    }
     public void setDefaultAddressModel() {
 
     }

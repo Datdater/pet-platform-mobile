@@ -37,6 +37,7 @@ import com.prm392.assignment.productsale.util.DialogsProvider;
 import com.prm392.assignment.productsale.view.activity.MainActivity;
 import com.prm392.assignment.productsale.view.activity.PaymentNotification;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.CheckoutPageViewModel;
+import com.vnpay.authentication.VNP_AuthenticationActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -114,14 +115,20 @@ public class CheckoutPageFragment extends Fragment {
             // Set selected items to ViewModel
             viewModel.setSelectedItems(selectedItems);
             
-            adapter.addCartItems(selectedItems);
+            adapter.setGroupedCartItems(selectedItems);
 
+            // Calculate total: sum of all store subtotals (products + one delivery fee per store)
             double totalPrice = 0;
+            java.util.LinkedHashMap<String, Double> storeTotals = new java.util.LinkedHashMap<>();
             for (CartItemModel item : selectedItems) {
-                totalPrice += item.getQuantity() * item.getPrice() + 30000;
+                double subtotal = storeTotals.getOrDefault(item.getStoreName(), 0.0);
+                subtotal += item.getQuantity() * item.getPrice();
+                storeTotals.put(item.getStoreName(), subtotal);
             }
-
-            vb.txtTotalAmount.setText(String.format(Locale.US, "%.0f₫", totalPrice));
+            for (String store : storeTotals.keySet()) {
+                totalPrice += storeTotals.get(store) + 30000; // add delivery fee per store
+            }
+            vb.txtTotalAmount.setText(String.format(java.util.Locale.US, "%.0f₫", totalPrice));
             setDefaultAddressModel();
 //            vb.lblUserAddress.setText(viewModel.getAddressModel().toString());
 //            vb.lblUsername.setText(viewModel.getAddressModel().getName());
@@ -157,7 +164,8 @@ public class CheckoutPageFragment extends Fragment {
 
         vb.buyNowBtn.setOnClickListener((v) -> {
             // Call buyNow method in ViewModel
-            viewModel.buyNow(getActivity());
+          viewModel.buyNow(getActivity());
+//            Intent intent = new Intent(this, VNP_AuthenticationActivity.class);
         });
 
         vb.navBack.setOnClickListener((v) -> {
