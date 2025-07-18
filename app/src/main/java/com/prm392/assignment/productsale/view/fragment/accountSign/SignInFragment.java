@@ -60,6 +60,29 @@ public class SignInFragment extends Fragment {
             ((AccountSign) getActivity()).setTitle(getString(R.string.Sign_In));
             ((AccountSign) getActivity()).setBackButton(false);
         }
+
+        // Kiểm tra xem có phải vừa đăng ký xong không
+        checkIfJustRegistered();
+    }
+    private void checkIfJustRegistered() {
+        // Lấy flag từ SharedPreferences hoặc Intent
+        boolean justRegistered = SharedPrefManager.get(getContext()).isJustRegistered();
+
+        if (justRegistered) {
+            // Reset flag
+            SharedPrefManager.get(getContext()).setJustRegistered(false);
+
+            // Hiển thị popup thông báo
+            showEmailVerificationReminder();
+        }
+    }
+    private void showEmailVerificationReminder() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+        builder.setTitle("Email Verification Required")
+                .setMessage("Please check your email and click the verification link to activate your account before signing in.")
+                .setPositiveButton("OK", null)
+                .setCancelable(true)
+                .show();
     }
 
     @Override
