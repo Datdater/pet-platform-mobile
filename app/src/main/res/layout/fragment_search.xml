@@ -99,6 +99,7 @@
                             android:textColor="?attr/textFillColor"
                             android:textColorHint="?attr/textFillColor"
                             android:textSize="17sp"
+                            android:visibility="invisible"
                             app:layout_constraintEnd_toStartOf="@+id/filter_button"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
