@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 public class UserResponseModel extends BaseResponseModel {
 
-    @SerializedName("access_token")
+    @SerializedName("accessToken")
     private String token;
 
     @SerializedName("user")

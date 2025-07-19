@@ -9,6 +9,8 @@ import com.prm392.assignment.productsale.model.BaseResponseModel;
 import com.prm392.assignment.productsale.model.SignInModel;
 import com.prm392.assignment.productsale.model.SignUpModel;
 import com.prm392.assignment.productsale.model.UserResponseModel;
+import com.prm392.assignment.productsale.model.ProfileResponseModel;
+import com.prm392.assignment.productsale.model.ChangePasswordModel;
 
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -66,4 +68,43 @@ public class AuthRepository {
         );
     }
 
+    public LiveData<Response<ProfileResponseModel>> getProfile(String token) {
+        return LiveDataReactiveStreams.fromPublisher(
+                mainClient.create(AuthService.class)
+                        .getProfile(token)
+                        .subscribeOn(Schedulers.io())
+                        .onErrorReturn(exception -> {
+                            MediaType mediaType = MediaType.parse("application/json");
+                            ResponseBody responseBody = ResponseBody.create(mediaType, "");
+
+                            if (exception instanceof HttpException) {
+                                return Response.error(((HttpException) exception).code(), responseBody);
+                            }
+
+                            return Response.error(
+                                    BaseResponseModel.FAILED_REQUEST_FAILURE, responseBody);
+                        })
+                        .toFlowable(BackpressureStrategy.LATEST)
+        );
+    }
+
+    public LiveData<Response<BaseResponseModel>> changePassword(String token, ChangePasswordModel changePasswordModel) {
+        return LiveDataReactiveStreams.fromPublisher(
+                mainClient.create(AuthService.class)
+                        .changePassword(token, changePasswordModel)
+                        .subscribeOn(Schedulers.io())
+                        .onErrorReturn(exception -> {
+                            MediaType mediaType = MediaType.parse("application/json");
+                            ResponseBody responseBody = ResponseBody.create(mediaType, "");
+
+                            if (exception instanceof HttpException) {
+                                return Response.error(((HttpException) exception).code(), responseBody);
+                            }
+
+                            return Response.error(
+                                    BaseResponseModel.FAILED_REQUEST_FAILURE, responseBody);
+                        })
+                        .toFlowable(BackpressureStrategy.LATEST)
+        );
+    }
 }

@@ -9,10 +9,9 @@ import lombok.Setter;
 @Getter
 public class SignInModel {
 
-    @SerializedName("username")
+    @SerializedName("emailOrUserNameOrPhone")
     private String username;
 
     @SerializedName("password")
     private String password;
-
 }

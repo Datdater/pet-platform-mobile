@@ -32,7 +32,6 @@
     <string name="next">Next</string>
     <string name="skip">SKIP</string>
     <string name="app_version">v0.0.0</string>
-    <string name="home">Home</string>
     <string name="dashboard">Dashboard</string>
     <string name="my_store">My Store</string>
     <string name="profile">Profile</string>
@@ -142,7 +141,7 @@
     <string name="password">Password</string>
     <string name="name">Name</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="search_for_product">Search For Product ...</string>
+    <string name="search_for_product">Tìm kiếm sản phẩm</string>
     <string name="About">About</string>
     <string name="Session_Expired">Session Expired !</string>
     <string name="You_are_signed_out_for_account_security">You are signed out for account security\nPlease sign in again.</string>
@@ -276,5 +275,26 @@
     <string name="No_products_found" translatable="false">No Products Found</string>
     <string name="load_more">Load More</string>
     <string name="phone_number">Phone Number</string>
+    <string name="c_c_lo_i_ph_ng_d_ch_v_cho_th_c_ng"><![CDATA[Các loại phòng & dịch vụ cho thú cưng]]></string>
+    <string name="m_t_d_ch_v_s_hi_n_th_y">Mô tả dịch vụ sẽ hiển thị ở đây</string>
+    <string name="_0_l_t_s_d_ng">0 lượt sử dụng</string>
+    <string name="service_category">Danh mục dịch vụ</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_pets">My Pets</string>
+    <string name="my_bookings">My Bookings</string>
+    <string name="my_addresses">My Addresses</string>
+    <string name="trang_ch">Trang chủ</string>
+    <string name="t_i_kho_n">Tài khoản</string>
+    <string name="ql_n_h_ng">QL Đơn hàng</string>
+    <string name="ql_th_c_ng">QL Thú cưng</string>
+    <string name="ql_t_l_ch">QL Đặt lịch</string>
+    <string name="ng_xu_t">Đăng xuất</string>
+    <string name="ql_a_ch">QL Địa chỉ</string>
+    <string name="th_c_ng_d_ch_v"><![CDATA[Thú cưng & Dịch vụ:]]></string>
+    <string name="t_ng_ti_n">Tổng tiền:</string>
+    <string-array name="pet_type_array">
+        <item>Chó</item>
+        <item>Mèo</item>
+    </string-array>
 
 </resources>

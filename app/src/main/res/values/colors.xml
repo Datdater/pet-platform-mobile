@@ -7,6 +7,7 @@
     <color name="darkModesecondary">#8342FE</color>
 
     <color name="accent">#FF4F04</color>
+    <color name="primary">#8342FE</color>
 
     <color name="lightModeText">#636363</color>
     <color name="lightModeBackground">#FFFFFF</color>

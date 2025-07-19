@@ -20,7 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,6 +50,7 @@ import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.databinding.FragmentProductPageBinding;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
 import com.prm392.assignment.productsale.model.products.ProductSaleModel;
+import com.prm392.assignment.productsale.model.products.ProductSalePageResponseModel;
 import com.prm392.assignment.productsale.model.products.StoreLocation;
 import com.prm392.assignment.productsale.util.AppSettingsManager;
 import com.prm392.assignment.productsale.util.DialogsProvider;
@@ -53,8 +58,14 @@ import com.prm392.assignment.productsale.view.activity.MainActivity;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.ProductPageViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import lecho.lib.hellocharts.view.LineChartView;
@@ -65,6 +76,7 @@ public class ProductPageFragment extends Fragment {
     private ProductPageViewModel viewModel;
     private NavController navController;
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
+    private String productVariantId;
 
     private GoogleMap googleMap;
 
@@ -115,7 +127,7 @@ public class ProductPageFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this, ViewModelProvider.Factory.from(ProductPageViewModel.initializer))
                 .get(ProductPageViewModel.class);
-        if (getArguments() != null) viewModel.setProductId(getArguments().getLong("productId"));
+        if (getArguments() != null) viewModel.setProductId(getArguments().getString("productId"));
 
         new Handler().post(() -> {
             navController = ((MainActivity) getActivity()).getAppNavController();
@@ -169,7 +181,7 @@ public class ProductPageFragment extends Fragment {
         //Add to cart
         vb.addToCartBtn.setOnClickListener(button -> {
             vb.productPageLoadingPage.setVisibility(View.VISIBLE);
-            viewModel.addProductToCart().observe(getViewLifecycleOwner(), response -> {
+            viewModel.addProductToCart(this.productVariantId).observe(getViewLifecycleOwner(), response -> {
                 vb.productPageLoadingPage.setVisibility(View.GONE);
                 viewModel.setProductQuantity(1);
                 vb.txtQuantity.setText("1");
@@ -180,7 +192,9 @@ public class ProductPageFragment extends Fragment {
         });
 
         vb.productPageNavigateButton.setOnClickListener(button -> {
-            Uri uri = Uri.parse("google.navigation:q=" + viewModel.getStoreLocation().getLatitude() + "," + viewModel.getStoreLocation().getLongitude());
+//            String address = viewModel.getStoreLocation().getFullAddress(); // Ví dụ: "123 Lý Thường Kiệt, Quận 10, TP.HCM"
+            String address = "123 Lý Thường Kiệt, Quận 10, TP.HCM";
+            Uri uri = Uri.parse("google.navigation:q=" + Uri.encode(address));
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(uri);
             startActivity(intent);
@@ -234,8 +248,7 @@ public class ProductPageFragment extends Fragment {
             switch (response.code()) {
                 case BaseResponseModel.SUCCESSFUL_OPERATION:
                     if (response.body() != null) {
-                        viewModel.setProductSaleModel(response.body().getProduct());
-                        viewModel.setStoreLocation(response.body().getStoreLocation());
+                        viewModel.setProductSaleModel(response.body());
                         renderProductSaleData();
                         vb.productPageLoadingPage.setVisibility(View.GONE);
                         vb.getRoot().startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.lay_on));
@@ -256,75 +269,114 @@ public class ProductPageFragment extends Fragment {
     }
 
     void renderProductSaleData() {
-        ProductSaleModel productSaleModel = viewModel.getProductSaleModel();
-        StoreLocation storeLocation = viewModel.getStoreLocation();
+        ProductSalePageResponseModel productSaleModel = viewModel.getProductSaleModel();
+        Map<String, Set<String>> availableAttributeValues = new HashMap<>();
+        Map<String, String> selectedAttributes = new HashMap<>(); // user selections
+
+        for (ProductSalePageResponseModel.Variant variant : productSaleModel.getVariants()) {
+            for (Map.Entry<String, String> entry : variant.getAttributes().entrySet()) {
+                availableAttributeValues
+                        .computeIfAbsent(entry.getKey(), k -> new HashSet<>())
+                        .add(entry.getValue());
+            }
+        }
+
+        // --- Set product info ---
         vb.productPageBrand.setText(productSaleModel.getCategoryName());
-        Double productPrice = Double.parseDouble(String.format("%.2f", productSaleModel.getPrice()));
-        vb.productPagePrice.setText(productPrice + "$");
-        vb.txtQuantity.setText(viewModel.getProductQuantity() + "");
+        vb.productPageTitle.setText(productSaleModel.getName());
+        vb.productPageDescription.setText(productSaleModel.getDescription());
+        vb.txtQuantity.setText(String.valueOf(viewModel.getProductQuantity()));
+        vb.productPagePrice.setText(String.format("%.0fLE", productSaleModel.getBasePrice()));
+        vb.textView18.setText("Store: " + productSaleModel.getStoreName());
+        vb.productSaleTechSpecsText.setText(buildTechSpecs(productSaleModel));
+        vb.productSaleFullDescription.setText(productSaleModel.getDescription());
+        vb.productRating.setText(String.valueOf(productSaleModel.getStarAverage()));
+        vb.reviewCount.setText(productSaleModel.getReviewCount() + " reviews");
+        vb.soldCount.setText(productSaleModel.getSold() + " sold");
 
-        Glide.with(this)
-                .load(Uri.parse(productSaleModel.getProductImage()))
-                .transition(DrawableTransitionOptions.withCrossFade(100))
-                .into(vb.productPageImage);
+        // --- Load main image ---
+        String mainImageUrl = getMainImageUrl(productSaleModel.getImages());
+        if (mainImageUrl != null && !mainImageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(mainImageUrl)
+                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                    .into(vb.productPageImage);
+        }
 
-        vb.productPageBrand.setText(productSaleModel.getCategoryName());
-        vb.productPageTitle.setText(productSaleModel.getProductName());
-        vb.productPageDescription.setText(productSaleModel.getBriefDescription());
-        vb.productSaleFullDescription.setText(productSaleModel.getFullDescription());
-        vb.productSaleTechSpecsText.setText(productSaleModel.getTechnicalSpecifications());
-        addProductOnMap(storeLocation.getLatitude(), storeLocation.getLongitude(), storeLocation.getAddress());
+        // --- Render Variant Spinners ---
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        vb.productVariantSection.removeAllViews();
 
-        String fullDescription = productSaleModel.getFullDescription();
+        for (Map.Entry<String, Set<String>> entry : availableAttributeValues.entrySet()) {
+            String attrName = entry.getKey();
+            List<String> values = new ArrayList<>(entry.getValue());
 
-        if (fullDescription.length() > 120) {
-            String shortDescription = fullDescription.substring(0, 110) + "... ";
+            View variantView = inflater.inflate(R.layout.item_variant_spinner, vb.productVariantSection, false);
+            TextView label = variantView.findViewById(R.id.variant_label);
+            Spinner spinner = variantView.findViewById(R.id.variant_spinner);
+            label.setText(attrName);
 
-            SpannableString readMore = new SpannableString(getString(R.string.Read_More));
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(@NonNull View widget) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, values);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
 
-                    vb.productSaleFullDescription.animate().alpha(0).setDuration(250).withEndAction(() -> {
-                        vb.productSaleFullDescription.setText(fullDescription);
-                        vb.productSaleFullDescription.animate().alpha(1f).setDuration(250).start();
-                    }).start();
-
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    selectedAttributes.put(attrName, values.get(position));
+                    updatePriceBySelectedVariant(productSaleModel.getVariants(), selectedAttributes);
                 }
+                @Override public void onNothingSelected(AdapterView<?> parent) {}
+            });
 
-                @Override
-                public void updateDrawState(@NonNull TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                }
-            };
+            vb.productVariantSection.addView(variantView);
+        }
+    }
+    private void updatePriceBySelectedVariant(List<ProductSalePageResponseModel.Variant> variants, Map<String, String> selectedAttrs) {
+        for (ProductSalePageResponseModel.Variant variant : variants) {
+            if (variant.getAttributes().entrySet().containsAll(selectedAttrs.entrySet())) {
+                vb.productPagePrice.setText(String.format("%.0fLE", variant.getPrice()));
+                // Nếu muốn cập nhật stock:
+                // vb.productStock.setText("In stock: " + variant.getStock());
+                this.productVariantId = variant.getId();
+                return;
+            }
+        }
 
-            readMore.setSpan(clickableSpan, 0, readMore.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            vb.productSaleFullDescription.setText(shortDescription);
-            vb.productSaleFullDescription.append(readMore);
-            vb.productSaleFullDescription.setMovementMethod(LinkMovementMethod.getInstance());
-
-        } else vb.productSaleFullDescription.setText(fullDescription);
-
+        // Nếu không có tổ hợp phù hợp:
+        vb.productPagePrice.setText("Không có giá"); // hoặc ẩn, hoặc đặt lại basePrice
     }
 
-    private void addProductOnMap(double lat, double lng, String storeName) {
-        try {
-            LatLng productLocation = new LatLng(lat, lng);
-            googleMap.addMarker(new MarkerOptions().position(productLocation)
-                    .title(storeName)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(productLocation)
-                    .zoom(googleMap.getCameraPosition().zoom < 8 ? 8 : googleMap.getCameraPosition().zoom)
-                    .build();
-
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Map Marker Error", Toast.LENGTH_SHORT).show();
+    private String getMainImageUrl(List<ProductSalePageResponseModel.Image> images) {
+        if (images == null || images.isEmpty()) {
+            return null;
         }
+
+        // Find main image first
+        for (ProductSalePageResponseModel.Image image : images) {
+            if (image.isMain()) {
+                return image.getImageUrl();
+            }
+        }
+
+        // If no main image, return first image
+        return images.get(0).getImageUrl();
+    }
+
+    private String buildTechSpecs(ProductSalePageResponseModel productSaleModel) {
+        StringBuilder specs = new StringBuilder();
+
+        specs.append("Dimensions: ")
+                .append(productSaleModel.getLength()).append("mm × ")
+                .append(productSaleModel.getWidth()).append("mm × ")
+                .append(productSaleModel.getHeight()).append("mm\n");
+
+        specs.append("Weight: ").append(productSaleModel.getWeight()).append("g\n");
+
+        if (productSaleModel.getVariants() != null && !productSaleModel.getVariants().isEmpty()) {
+            specs.append("Available Variants: ").append(productSaleModel.getVariants().size());
+        }
+
+        return specs.toString();
     }
 
     public String dateTimeConvert(String dateTime) {

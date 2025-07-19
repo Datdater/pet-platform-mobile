@@ -3,8 +3,12 @@ package com.prm392.assignment.productsale.model;
 import com.google.gson.annotations.SerializedName;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 public class BaseResponseModel {
     public static final int SUCCESSFUL_OPERATION = 200; //Successful: Data Process, Data Update, Data Retrieval
     public static final int SUCCESSFUL_CREATION = 201; //Successful: Data Creation
