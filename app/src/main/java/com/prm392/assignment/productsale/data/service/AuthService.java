@@ -9,7 +9,7 @@ import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
+import retrofit2.http.PUT;
 
 public interface AuthService {
     @Headers({"client: mobile"})
@@ -19,6 +19,13 @@ public interface AuthService {
     @Headers({"client: mobile"})
     @POST("Auth/register")
     Observable<Response<UserResponseModel>> signUp(@Body SignUpModel signUpModel);
+    @Headers({"client: mobile"})
+    @GET("Profile")
+    Observable<Response<ProfileResponseModel>> getProfile(@Header("Authorization") String token);
+    @Headers({"client: mobile"})
+    @PUT("Profile/update-password")
+    Observable<Response<BaseResponseModel>> changePassword(@Header("Authorization") String token, @Body ChangePasswordModel changePasswordModel);
+}
 
     @Headers({"client: mobile"})
     @POST("Auth/email")

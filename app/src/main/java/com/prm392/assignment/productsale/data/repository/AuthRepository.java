@@ -1,7 +1,5 @@
 package com.prm392.assignment.productsale.data.repository;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 
@@ -23,7 +21,6 @@ import retrofit2.Retrofit;
 public class AuthRepository {
 
     private final Retrofit mainClient;
-    private static final String TAG = "AuthRepository";
 
     public AuthRepository() {
         mainClient = RetrofitClient.getMainInstance();
@@ -110,6 +107,46 @@ public class AuthRepository {
                             Log.e(TAG, "SendEmailConfirmation Error: " + exception.getMessage(), exception);
                             ResponseBody responseBody = ResponseBody.create(
                                     MediaType.get("application/json"), "");
+
+                            if (exception instanceof HttpException) {
+                                return Response.error(((HttpException) exception).code(), responseBody);
+                            }
+
+                            return Response.error(
+                                    BaseResponseModel.FAILED_REQUEST_FAILURE, responseBody);
+                        })
+                        .toFlowable(BackpressureStrategy.LATEST)
+        );
+    }
+
+    public LiveData<Response<ProfileResponseModel>> getProfile(String token) {
+        return LiveDataReactiveStreams.fromPublisher(
+                mainClient.create(AuthService.class)
+                        .getProfile(token)
+                        .subscribeOn(Schedulers.io())
+                        .onErrorReturn(exception -> {
+                            MediaType mediaType = MediaType.parse("application/json");
+                            ResponseBody responseBody = ResponseBody.create(mediaType, "");
+
+                            if (exception instanceof HttpException) {
+                                return Response.error(((HttpException) exception).code(), responseBody);
+                            }
+
+                            return Response.error(
+                                    BaseResponseModel.FAILED_REQUEST_FAILURE, responseBody);
+                        })
+                        .toFlowable(BackpressureStrategy.LATEST)
+        );
+    }
+
+    public LiveData<Response<BaseResponseModel>> changePassword(String token, ChangePasswordModel changePasswordModel) {
+        return LiveDataReactiveStreams.fromPublisher(
+                mainClient.create(AuthService.class)
+                        .changePassword(token, changePasswordModel)
+                        .subscribeOn(Schedulers.io())
+                        .onErrorReturn(exception -> {
+                            MediaType mediaType = MediaType.parse("application/json");
+                            ResponseBody responseBody = ResponseBody.create(mediaType, "");
 
                             if (exception instanceof HttpException) {
                                 return Response.error(((HttpException) exception).code(), responseBody);
