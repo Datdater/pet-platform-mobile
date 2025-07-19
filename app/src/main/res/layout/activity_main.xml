@@ -63,7 +63,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/home"
+                android:text="@string/trang_ch"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -81,7 +81,79 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/profile"
+                android:text="@string/t_i_kho_n"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_orders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_orders"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/ql_n_h_ng"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_pets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_pets"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/ql_th_c_ng"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_bookings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_bookings"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/ql_t_l_ch"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <RadioButton
+                android:id="@+id/menu_addresses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/clickable_text"
+                android:button="@drawable/menu_item_selector"
+                android:buttonTint="#FFFFFF"
+                android:checked="false"
+                android:drawableStart="@drawable/menu_icon_addresses"
+                android:drawablePadding="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:includeFontPadding="false"
+                android:paddingStart="10dp"
+                android:text="@string/ql_a_ch"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -100,7 +172,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:includeFontPadding="false"
                 android:paddingStart="10dp"
-                android:text="@string/sign_out"
+                android:text="@string/ng_xu_t"
                 android:textColor="@color/accent"
                 android:textSize="20sp" />
         </RadioGroup>
@@ -182,7 +254,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:text="@string/home"
+            android:text="Trang chủ"
             android:textAlignment="center"
             android:textColor="?attr/colorPrimary"
             android:textSize="28sp"
@@ -196,7 +268,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:scaleType="fitXY"
             app:layout_constraintStart_toStartOf="parent"

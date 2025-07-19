@@ -9,32 +9,32 @@ import lombok.Setter;
 @Getter
 public class ProductSaleModel {
 
-    @SerializedName(value = "productId")
-    private long productId;
+    @SerializedName(value = "id")
+    private String productId;
 
-    @SerializedName(value = "productName")
+    @SerializedName(value = "name")
     private String productName;
 
-    @SerializedName(value = "briefDescription")
-    private String briefDescription;
-
-    @SerializedName(value = "fullDescription")
-    private String fullDescription;
-
-    @SerializedName(value = "technicalSpecifications")
-    private String technicalSpecifications;
+    @SerializedName(value = "storeName")
+    private String storeName;
 
     @SerializedName(value = "price")
     private float price;
+    @SerializedName(value = "starAverage")
+    private float starAverage;
+    @SerializedName(value = "reviewCount")
+    private int reviewCount;
+    @SerializedName(value = "sold")
+    private int sold;
 
-    @SerializedName(value = "imageUrl")
+    @SerializedName(value = "productImage")
     private String imageUrl;
 
     @SerializedName(value = "categoryName")
     private String categoryName;
 
     public String getCurrencyPrice() {
-        return price + "$";
+        return (int)price + "đ";
     }
 
     public String getProductName() { return productName; }

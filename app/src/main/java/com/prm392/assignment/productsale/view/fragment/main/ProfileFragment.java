@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -25,8 +26,11 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.databinding.FragmentProfileBinding;
+import com.prm392.assignment.productsale.model.BaseResponseModel;
+import com.prm392.assignment.productsale.model.ProfileResponseModel;
 import com.prm392.assignment.productsale.model.UserModel;
 import com.prm392.assignment.productsale.util.UserAccountManager;
+import com.prm392.assignment.productsale.view.fragment.dialogs.PasswordChangeDialog;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.ProfileViewModel;
 
 
@@ -95,7 +99,8 @@ public class ProfileFragment extends Fragment {
         vb.profileSocialLogo.setVisibility(View.GONE);
         vb.profileEditSocialProfile.setVisibility(View.GONE);
 
-        renderProfileData();
+        // Gọi API để lấy thông tin profile
+        loadProfileData();
 
         Glide.with(this).load(R.drawable.abstract_bg)
                 .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(40)))
@@ -106,6 +111,9 @@ public class ProfileFragment extends Fragment {
                 .placeholder(R.drawable.profile_placeholder)
                 .circleCrop()
                 .into(vb.profilePic);
+        vb.profilePasswordField.getEditText().setOnClickListener(button -> {
+            showPasswordChangeDialog();
+        });
 
 //        vb.profileUsernameField.getEditText().addTextChangedListener(new TextWatcher() {
 //            @Override
@@ -176,6 +184,44 @@ public class ProfileFragment extends Fragment {
 //            if (isDataValid()) saveProfile();
 //        });
 
+    }
+    private void showPasswordChangeDialog() {
+        PasswordChangeDialog dialog = PasswordChangeDialog.newInstance();
+        dialog.show(getChildFragmentManager(), "PasswordChangeDialog");
+    }
+    void loadProfileData() {
+        if (token != null && !token.isEmpty()) {
+            viewModel.getProfile(token).observe(getViewLifecycleOwner(), response -> {
+                if (response != null && response.isSuccessful() && response.body() != null) {
+                    ProfileResponseModel profileData = response.body();
+
+                    // Cập nhật UI với dữ liệu từ API
+                    vb.profileUsername.setText(profileData.getName());
+                    vb.profileUsernameField.getEditText().setText(profileData.getName());
+                    vb.profileEmailField.getEditText().setText(profileData.getEmail());
+                    vb.profilePasswordField.getEditText().setText("00000000");
+                    vb.profileAccountType.setText("Customer"); // Hoặc lấy từ API nếu có
+
+                    // Cập nhật user object
+                    user.setUserName(profileData.getName());
+                    user.setEmail(profileData.getEmail());
+                    user.setPhone(profileData.getPhoneNumber());
+
+                    showSaveButton(false);
+                } else {
+                    // Xử lý lỗi
+                    if (response != null && response.code() == BaseResponseModel.FAILED_AUTH) {
+                        UserAccountManager.signOut(getActivity(), true);
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        Toast.makeText(getContext(), "Không thể tải thông tin profile", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            // Token không hợp lệ, chuyển về màn hình đăng nhập
+            UserAccountManager.signOut(getActivity(), true);
+        }
     }
 
     void showSaveButton(boolean show) {

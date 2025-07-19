@@ -11,7 +11,7 @@ public class UserModel {
     @Setter
     @Getter
     @SerializedName("userId")
-    private int id;
+    private String id;
     @Setter
     @Getter
     @SerializedName("username")

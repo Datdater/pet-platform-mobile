@@ -85,13 +85,13 @@ public class CheckoutListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             DataViewHolder holder  = (DataViewHolder) viewHolder;
 
-            holder.productName.setText(data.get(position).getProduct().getProductName());
+            holder.productName.setText(data.get(position).getProductName());
+            holder.productCategory.setText((data.get(position).getStoreName()));
             holder.productPrice.setText(String.format("%s %s", data.get(position).getPrice(), context.getString(R.string.currency)));
-            holder.productQuantity.setText("Quantity: " + data.get(position).getQuantity());
-            holder.productCategory.setText(data.get(position).getProduct().getCategoryName());
-
+            holder.productQuantity.setText(String.valueOf(data.get(position).getQuantity()));
+//            holder.productImage.setImageURI(Uri.parse(data.get(position).getProduct().getProductImage()));
             Glide.with(context)
-                    .load(Uri.parse(data.get(position).getProduct().getProductImage()))
+                    .load(Uri.parse(data.get(position).getPictureUrl()))
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade(250))
                     .into(holder.productImage);

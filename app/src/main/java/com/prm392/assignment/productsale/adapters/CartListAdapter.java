@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
@@ -28,6 +29,7 @@ import com.prm392.assignment.productsale.model.ProductModel;
 import com.prm392.assignment.productsale.model.UserModel;
 import com.prm392.assignment.productsale.model.cart.CartItemModel;
 import com.prm392.assignment.productsale.model.cart.CartModel;
+import com.prm392.assignment.productsale.model.cart.UpdateCartModel;
 import com.prm392.assignment.productsale.util.AppSettingsManager;
 import com.prm392.assignment.productsale.util.UserAccountManager;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.home.OnSaleViewModel;
@@ -82,6 +84,7 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView productName, productPrice, productQuantity, brand;
         ImageView productImage;
         CheckBox deleteCheckBox;
+        CheckBox productCheckbox;
         ImageButton increaseButton, decreaseButton;
 
         public DataViewHolder(View view) {
@@ -95,6 +98,7 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             deleteCheckBox = view.findViewById(R.id.product_list_item_delete); // Changed ID
             increaseButton = view.findViewById(R.id.increaseBtn);
             decreaseButton = view.findViewById(R.id.decreaseBtn);
+            productCheckbox = view.findViewById(R.id.product_list_item_checkbox);
         }
     }
 
@@ -129,20 +133,25 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             DataViewHolder holder  = (DataViewHolder) viewHolder;
             CartItemModel cartItem = data.get(position);
 
-            holder.productName.setText(data.get(position).getProduct().getProductName());
-//            holder.brand.setText((data.get(position).getProduct().getCategory().getCategoryName()));
+            holder.productName.setText(data.get(position).getProductName());
+            holder.brand.setText((data.get(position).getStoreName()));
             holder.productPrice.setText(String.format("%s %s", data.get(position).getPrice(), context.getString(R.string.currency)));
             holder.productQuantity.setText(String.valueOf(data.get(position).getQuantity()));
+            holder.productCheckbox.setOnCheckedChangeListener(null);
+//            holder.productImage.setImageURI(Uri.parse(data.get(position).getProduct().getProductImage()));
+            holder.productCheckbox.setChecked(data.get(position).isSelected());
             Glide.with(context)
-                    .load(Uri.parse(data.get(position).getProduct().getProductImage()))
+                    .load(Uri.parse(data.get(position).getPictureUrl()))
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade(250))
                     .into(holder.productImage);
-
+            holder.productCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                cartItem.setSelected(isChecked);
+            });
             holder.increaseButton.setOnClickListener(v -> {
                 int updatedQuantity = cartItem.getQuantity() + 1;
                 cartItem.setQuantity(updatedQuantity);
-                cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
+                cartItem.setPrice(cartItem.getPrice());
                 holder.productQuantity.setText(String.valueOf(updatedQuantity));
                 holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
                 updateCartItemQuantity(cartItem);  // Call API to update quantity
@@ -153,7 +162,7 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (cartItem.getQuantity() > 1) {  // Prevent going below 1
                     int updatedQuantity = cartItem.getQuantity() - 1;
                     cartItem.setQuantity(updatedQuantity);
-                    cartItem.setPrice(cartItem.getProduct().getPrice() * updatedQuantity);
+                    cartItem.setPrice(cartItem.getPrice());
                     holder.productQuantity.setText(String.valueOf(updatedQuantity));
                     holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
                     updateCartItemQuantity(cartItem);  // Call API to update quantity
@@ -168,13 +177,10 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void updateCartItemQuantity(CartItemModel cartItem) {
-        int userId = viewModel.getUserModel().getId();
-        int productId = cartItem.getProductId(); // Get the product ID
-        int newQuantity = cartItem.getQuantity(); // Get the updated quantity
-
+        UpdateCartModel model = new UpdateCartModel(cartItem.getCartId(), cartItem.getQuantity());
 
         // Call the ViewModel's method to update the cart item quantity
-        viewModel.updateCartItem(userId, productId, newQuantity).observe(lifecycleOwner, response -> {
+        viewModel.updateCartItem(model).observe(lifecycleOwner, response -> {
             switch (response.code()) {
                 case BaseResponseModel.SUCCESSFUL_OPERATION:
                     // If the update is successful, notify the user
@@ -196,11 +202,10 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void removeCartItem(CartItemModel cartItem) {
-        int userId = viewModel.getUserModel().getId();
-        int productId = cartItem.getProductId(); // Lấy productId của item cần xóa
+        String cartId = cartItem.getCartId(); // Lấy productId của item cần xóa
 
         // Gọi phương thức removeCartItem từ ViewModel
-            viewModel.removeCartItem(userId, productId).observe(lifecycleOwner, response -> {
+            viewModel.removeCartItem(cartId).observe(lifecycleOwner, response -> {
                 switch (response.code()) {
                     case BaseResponseModel.SUCCESSFUL_OPERATION:
                         // Nếu xóa thành công, xóa item khỏi RecyclerView
@@ -262,18 +267,18 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //    }
 
     private void getCartTotalPrice() {
-        int userId = viewModel.getUserModel().getId();
+        String userId = viewModel.getUserModel().getId();
 
         // Gọi API để lấy tổng giá trị giỏ hàng từ server
-        viewModel.getCartTotal(userId).observe(lifecycleOwner, response -> {
-            if (response != null && response.body() != null) {
-                // Lấy tổng giá trị từ response và cập nhật vào giao diện
-                double totalPrice = response.body().getTotal();
-                viewModel.updateTotalPrice(totalPrice);  // Cập nhật giá trị tổng vào ViewModel
-            } else {
-                Toast.makeText(context, "Failed to fetch cart total", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        viewModel.getCartTotal(userId).observe(lifecycleOwner, response -> {
+//            if (response != null && response.body() != null) {
+//                // Lấy tổng giá trị từ response và cập nhật vào giao diện
+//                double totalPrice = response.body().getTotal();
+//                viewModel.updateTotalPrice(totalPrice);  // Cập nhật giá trị tổng vào ViewModel
+//            } else {
+//                Toast.makeText(context, "Failed to fetch cart total", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     public void addCartItems(ArrayList<CartItemModel> cartItems) {
@@ -300,6 +305,16 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 notifyItemRemoved(index);
             }
         });
+    }
+
+    public List<CartItemModel> getSelectedItems() {
+        List<CartItemModel> selectedItems = new ArrayList<>();
+        for (CartItemModel item : data) {
+            if (item.isSelected()) {
+                selectedItems.add(item);
+            }
+        }
+        return selectedItems;
     }
 
 }
