@@ -56,7 +56,7 @@ public class OrdersFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setTitle("My Orders");
+        ((MainActivity) getActivity()).setTitle("Đơn hàng");
     }
 
     @Override

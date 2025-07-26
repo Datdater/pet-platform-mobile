@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveDataReactiveStreams;
 import com.prm392.assignment.productsale.data.remote.RetrofitClient;
 import com.prm392.assignment.productsale.data.service.AuthService;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
+import com.prm392.assignment.productsale.model.ChangePasswordModel;
+import com.prm392.assignment.productsale.model.ProfileResponseModel;
 import com.prm392.assignment.productsale.model.SignInModel;
 import com.prm392.assignment.productsale.model.SignUpModel;
 import com.prm392.assignment.productsale.model.UserResponseModel;
@@ -32,7 +34,6 @@ public class AuthRepository {
                         .signIn(signInModel)
                         .subscribeOn(Schedulers.io())
                         .onErrorReturn(exception -> {
-                            Log.e(TAG, "SignIn Error: " + exception.getMessage(), exception);
                             ResponseBody responseBody = ResponseBody.create(
                                     MediaType.get("application/json"), "");
 
@@ -48,14 +49,12 @@ public class AuthRepository {
     }
 
     public LiveData<Response<UserResponseModel>> signUp(SignUpModel signUpModel) {
-        Log.d(TAG, "SignUp attempt with data: " + signUpModel.toString());
 
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(AuthService.class)
                         .signUp(signUpModel)
                         .subscribeOn(Schedulers.io())
                         .map(response -> {
-                            Log.d(TAG, "Raw response code: " + response.code());
 
                             if (response.isSuccessful()) {
                                 // Handle successful response even if body is null
@@ -71,12 +70,10 @@ public class AuthRepository {
                             }
                         })
                         .onErrorReturn(exception -> {
-                            Log.e(TAG, "SignUp Error: " + exception.getMessage(), exception);
 
                             // Check if it's a JSON parsing error (empty body)
                             if (exception.getMessage() != null &&
                                     exception.getMessage().contains("End of input")) {
-                                Log.d(TAG, "Empty response body detected, treating as success");
                                 UserResponseModel emptyUserResponse = new UserResponseModel();
                                 return Response.success(emptyUserResponse);
                             }
@@ -85,11 +82,9 @@ public class AuthRepository {
                                     MediaType.get("application/json"), "");
 
                             if (exception instanceof HttpException) {
-                                Log.e(TAG, "HTTP Error Code: " + ((HttpException) exception).code());
                                 return Response.error(((HttpException) exception).code(), responseBody);
                             }
 
-                            Log.e(TAG, "Network/Connection Error");
                             return Response.error(
                                     BaseResponseModel.FAILED_REQUEST_FAILURE, responseBody);
                         })
@@ -97,14 +92,12 @@ public class AuthRepository {
         );
     }
     public LiveData<Response<Void>> sendEmailConfirmation(String email) {
-        Log.d(TAG, "Sending email confirmation to: " + email);
 
         return LiveDataReactiveStreams.fromPublisher(
                 mainClient.create(AuthService.class)
                         .sendEmailConfirmation(email)
                         .subscribeOn(Schedulers.io())
                         .onErrorReturn(exception -> {
-                            Log.e(TAG, "SendEmailConfirmation Error: " + exception.getMessage(), exception);
                             ResponseBody responseBody = ResponseBody.create(
                                     MediaType.get("application/json"), "");
 

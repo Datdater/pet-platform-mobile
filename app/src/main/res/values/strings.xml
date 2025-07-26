@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Product Sale</string>
+    <string name="app_name">Sen And Pet</string>
 
     <!-- Facebook Auth-->
     <string name="facebook_app_id">FACEBOOK_APP_ID</string>

@@ -43,7 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Your Information"
+                        android:text="Thông tin giao hàng"
                         android:textAlignment="textStart"
                         android:textSize="24sp"
                         android:textStyle="bold"
@@ -112,7 +112,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Your products"
+                        android:text="Sản phẩm"
                         android:textAlignment="textStart"
                         android:textSize="24sp"
                         android:textStyle="bold"
@@ -154,7 +154,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Payment Information"
+                        android:text="Thanh toán"
                         android:textAlignment="textStart"
                         android:textSize="24sp"
                         android:textStyle="bold"
@@ -180,7 +180,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="4dp"
-                            android:text="Cash"
+                            android:text="Tiền mặt"
                             android:textSize="20sp" />
 
                         <RadioButton
@@ -188,7 +188,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="4dp"
-                            android:text="Credit Card"
+                            android:text="Ngân hàng"
                             android:textSize="20sp" />
                     </RadioGroup>
 
@@ -208,7 +208,7 @@
                         android:id="@+id/lblShipping"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Shipping Fee:"
+                        android:text="Phí vận chuyển:"
                         android:textAlignment="textStart"
                         android:textColor="@color/black"
                         android:textSize="20sp"
@@ -235,7 +235,7 @@
                         android:id="@+id/lblTotal"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Total:"
+                        android:text="Tổng:"
                         android:textAlignment="textStart"
                         android:textColor="?attr/colorAccent"
                         android:textSize="40sp"

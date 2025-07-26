@@ -11,7 +11,7 @@
         android:id="@+id/dialog_address_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add New Address"
+        android:text="Thêm địa chỉ"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="?android:attr/textColorPrimary"
@@ -32,7 +32,7 @@
                 android:labelFor="@id/dialog_address_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Full Name"
+                android:text="Họ và tên"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="4dp" />
 
@@ -58,7 +58,7 @@
                 android:labelFor="@id/dialog_address_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Phone Number"
+                android:text="Số điện thoại"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="4dp" />
 
@@ -84,7 +84,7 @@
                 android:labelFor="@id/dialog_address_street"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Street Address"
+                android:text="Đường"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="4dp" />
 
@@ -110,7 +110,7 @@
                 android:labelFor="@id/dialog_address_city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="City"
+                android:text="Tỉnh/thành phố"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="4dp" />
 
@@ -137,7 +137,7 @@
                 android:labelFor="@id/dialog_address_district"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="District"
+                android:text="Quận/huyện"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="4dp" />
 
@@ -164,7 +164,7 @@
                 android:labelFor="@id/dialog_address_ward"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ward"
+                android:text="Phường/Xã"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="4dp" />
 
@@ -192,7 +192,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="Set as default address"
+                android:text="Đặt làm địa chỉ mặc định"
                 android:textColor="?android:attr/textColorPrimary" />
 
         </LinearLayout>

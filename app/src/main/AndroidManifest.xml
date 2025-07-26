@@ -72,7 +72,7 @@
             android:name=".view.activity.MainActivity"
             android:configChanges="orientation|screenLayout|fontScale|screenSize|density"
             android:exported="true"
-            android:label="Merchant Demo"
+            android:label="Sen and Pet"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>

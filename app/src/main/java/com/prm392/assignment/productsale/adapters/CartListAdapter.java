@@ -20,8 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.prm392.assignment.productsale.R;
 import com.prm392.assignment.productsale.model.BaseResponseModel;
@@ -135,7 +137,9 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             holder.productName.setText(data.get(position).getProductName());
             holder.brand.setText((data.get(position).getStoreName()));
-            holder.productPrice.setText(String.format("%s %s", data.get(position).getPrice(), context.getString(R.string.currency)));
+            NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
+            String formattedPrice = format.format(data.get(position).getPrice());
+            holder.productPrice.setText(formattedPrice);
             holder.productQuantity.setText(String.valueOf(data.get(position).getQuantity()));
             holder.productCheckbox.setOnCheckedChangeListener(null);
 //            holder.productImage.setImageURI(Uri.parse(data.get(position).getProduct().getProductImage()));
@@ -153,7 +157,7 @@ public class CartListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 cartItem.setQuantity(updatedQuantity);
                 cartItem.setPrice(cartItem.getPrice());
                 holder.productQuantity.setText(String.valueOf(updatedQuantity));
-                holder.productPrice.setText(String.format("%s %s", cartItem.getPrice(), context.getString(R.string.currency)));
+                holder.productPrice.setText(formattedPrice);
                 updateCartItemQuantity(cartItem);  // Call API to update quantity
             });
 

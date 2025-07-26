@@ -285,9 +285,9 @@ public class CheckoutPageViewModel extends ViewModel {
         if (selectedItems == null || selectedItems.isEmpty()) {
             // No items to remove, just show success message
             isLoading.postValue(false);
-            Toast.makeText(context, "Order created successfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Đơn hàng tạo thành công!", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(context, PaymentNotification.class);
-            intent.putExtra("result", "Order created successfully");
+            intent.putExtra("result", "Đơn hàng tạo thành công!");
             context.startActivity(intent);
             return;
         }
@@ -306,7 +306,7 @@ public class CheckoutPageViewModel extends ViewModel {
                         isLoading.postValue(false);
                         Toast.makeText(context, "Order created successfully! Items removed from cart.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, PaymentNotification.class);
-                        intent.putExtra("result", "Order created successfully");
+                        intent.putExtra("result", "Đơn hàng tạo thành công");
                         context.startActivity(intent);
                         break;
 
@@ -330,12 +330,12 @@ public class CheckoutPageViewModel extends ViewModel {
             if (response != null && response.isSuccessful()) {
                 Toast.makeText(context, "Order created successfully! Cart cleared.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, PaymentNotification.class);
-                intent.putExtra("result", "Order created successfully");
+                intent.putExtra("result", "Đơn hàng tạo thành công");
                 context.startActivity(intent);
             } else {
                 Toast.makeText(context, "Order created successfully! (Cart may not have been cleared)", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, PaymentNotification.class);
-                intent.putExtra("result", "Order created successfully");
+                intent.putExtra("result", "Đơn hàng tạo thành công");
                 context.startActivity(intent);
             }
         });

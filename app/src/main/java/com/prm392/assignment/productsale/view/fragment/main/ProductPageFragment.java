@@ -57,6 +57,7 @@ import com.prm392.assignment.productsale.util.DialogsProvider;
 import com.prm392.assignment.productsale.view.activity.MainActivity;
 import com.prm392.assignment.productsale.viewmodel.fragment.main.ProductPageViewModel;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -286,7 +287,8 @@ public class ProductPageFragment extends Fragment {
         vb.productPageTitle.setText(productSaleModel.getName());
         vb.productPageDescription.setText(productSaleModel.getDescription());
         vb.txtQuantity.setText(String.valueOf(viewModel.getProductQuantity()));
-        vb.productPagePrice.setText(String.format("%.0fLE", productSaleModel.getBasePrice()));
+        NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        vb.productPagePrice.setText(format.format(productSaleModel.getBasePrice()));
         vb.textView18.setText("Store: " + productSaleModel.getStoreName());
         vb.productSaleTechSpecsText.setText(buildTechSpecs(productSaleModel));
         vb.productSaleFullDescription.setText(productSaleModel.getDescription());
@@ -334,7 +336,8 @@ public class ProductPageFragment extends Fragment {
     private void updatePriceBySelectedVariant(List<ProductSalePageResponseModel.Variant> variants, Map<String, String> selectedAttrs) {
         for (ProductSalePageResponseModel.Variant variant : variants) {
             if (variant.getAttributes().entrySet().containsAll(selectedAttrs.entrySet())) {
-                vb.productPagePrice.setText(String.format("%.0fLE", variant.getPrice()));
+                NumberFormat format = NumberFormat.getInstance(new Locale("vi", "VN"));
+                vb.productPagePrice.setText(format.format(variant.getPrice()) + " đ");
                 // Nếu muốn cập nhật stock:
                 // vb.productStock.setText("In stock: " + variant.getStock());
                 this.productVariantId = variant.getId();

@@ -111,6 +111,7 @@
                             android:background="@drawable/button_round"
                             app:layout_constraintBottom_toBottomOf="@+id/search_searchbar"
                             app:layout_constraintEnd_toEndOf="parent"
+                            android:visibility="invisible"
                             app:layout_constraintTop_toTopOf="@+id/search_searchbar"
                             app:srcCompat="@drawable/filter" />
 
